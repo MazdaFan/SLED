@@ -116,6 +116,12 @@ type
     procedure OpenTemplate1Click(Sender: TObject);
     procedure New1Click(Sender: TObject);
     procedure SaveSequence1Click(Sender: TObject);
+    procedure FormMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure FormMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+
 
 
   private
@@ -147,7 +153,7 @@ const
 
 implementation
 
-uses about, setup, MATRIX, SEQUENCE, File_IO, Buffer, EXPORT_LOR;
+uses about, setup, MATRIX, SEQUENCE, File_IO, Buffer, EXPORT_LOR, EXPORT_VIXEN;
 
 {$R *.dfm}
 
@@ -174,6 +180,7 @@ begin
   SaveSequence(SaveDialog.FileName);
 end;
 
+
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   // As the form closes, we need to free up the memory from our array of lights
@@ -195,18 +202,28 @@ procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   // Catch keystrokes and manipulate the matrix
-  if Shift = [ssShift, ssLeft] then     // Catch Shifted Keystrokes
+  if ssShift in Shift then     // Catch Shifted Keystrokes
     begin
       //
     end
   else
-  if Shift = [ssAlt] then       // Catch Alt Keypresses
+  if ssAlt in Shift then       // Catch Alt Keypresses
     begin
-
+       //
     end
-  else if Shift = [ssCtrl] then   // Catch Ctrl Keypresses
+  else if ssCtrl in Shift then   // Catch Ctrl Keypresses
        begin
-
+        case Key of
+          VK_NUMPAD1: begin ShiftDown; ShiftLeft; end;
+          VK_NUMPAD2: begin ShiftDown; end;
+          VK_NUMPAD3: begin ShiftDown; ShiftRight; end;
+          VK_NUMPAD4: begin ShiftLeft; end;
+          VK_NUMPAD5: begin SwapBuffer; end;
+          VK_NUMPAD6: begin ShiftRight; end;
+          VK_NUMPAD7: begin ShiftUp; ShiftLeft; end;
+          VK_NUMPAD8: begin ShiftUp; end;
+          VK_NUMPAD9: begin ShiftUp; ShiftRight; end;
+        end;
        end
   else                        // No Modifier
     begin
@@ -216,12 +233,12 @@ begin
         VK_NUMPAD2: begin CaptureFrame; ShiftDown; end;
         VK_NUMPAD3: begin CaptureFrame; ShiftDown; ShiftRight; end;
         VK_NUMPAD4: begin CaptureFrame; ShiftLeft; end;
-        VK_NUMPAD5: CaptureFrame;
+        VK_NUMPAD5: begin CaptureFrame; SwapBuffer; end;
         VK_NUMPAD6: begin CaptureFrame; ShiftRight; end;
         VK_NUMPAD7: begin CaptureFrame; ShiftUp; ShiftLeft; end;
         VK_NUMPAD8: begin CaptureFrame; ShiftUp; end;
         VK_NUMPAD9: begin CaptureFrame; ShiftUp; ShiftRight; end;
-        VK_RETURN:;
+        VK_RETURN: CaptureFrame;
         VK_SUBTRACT:; // begin CaptureFrame; SplitHorizontally; end;
         VK_ADD:; // begin CaptureFrame; SplitHorizontally; SplitVertically; end;
         VK_LEFT: BackupFrame;
@@ -234,6 +251,29 @@ begin
     end;
 
   end;
+end;
+
+procedure TMainForm.FormMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  MouseDrag := True;
+  SetCapture(MainForm.Handle);
+end;
+
+procedure TMainForm.FormMouseMove(Sender: TObject; Shift: TShiftState; X,
+  Y: Integer);
+begin
+  if Dragging then    // Put capture code here for dragging the mouse
+    begin
+
+    end;
+end;
+
+procedure TMainForm.FormMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  MouseDrag := False;
+  ReleaseCapture;
 end;
 
 procedure TMainForm.AsLORS31Click(Sender: TObject);

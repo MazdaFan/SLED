@@ -11,6 +11,11 @@ type
     ColorDialog1: TColorDialog;
     Shape1: TShape;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure FormMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
   end;
 procedure CreateBuffer;
 procedure FillBufferMatrix;
@@ -19,6 +24,7 @@ procedure ShiftBufferUp;
 procedure ShiftBufferDown;
 procedure ShiftBufferLeft;
 procedure ShiftBufferRight;
+procedure SwapBuffer;
 
 
 var
@@ -72,7 +78,7 @@ begin
           BufferMatrix[Y, X].Left := ((X*ShapeSize));
           BufferMatrix[Y, X].Top := ((Y*ShapeSize)+30);
           BufferMatrix[Y, X].DragKind := dkDrag;
-          BufferMatrix[Y, X].OnMouseDown := EVHandler.ButtonClick;
+          BufferMatrix[Y, X].OnMouseDown := EVHandler.MouseDown;
           BufferMatrix[Y, X].Parent := BufferForm;
       end;
 end;
@@ -82,7 +88,7 @@ begin
   //
   FreeBufferMatrix;
   FillBufferMatrix;
-  BufferForm.Resize;   // Need to figure out how to make the form resize itself
+  BufferForm.Width := BufferForm.Width + 1;   // makes the form resize itself
 end;
 
 procedure ShiftBufferUp;
@@ -144,7 +150,9 @@ procedure TBufferForm.FormKeyDown(Sender: TObject; var Key: Word;
 begin
   if Shift = [ssShift] then     // Catch Shifted Keystrokes
     begin
-      //
+      case Key of
+        VK_F2:; //PlaceHolder - Does Nothing
+      end;
     end
   else if Shift = [ssAlt] then       // Catch Alt Keypresses
     begin
@@ -153,6 +161,17 @@ begin
   else if Shift = [ssCtrl] then   // Catch Ctrl Keypresses
     begin
         //
+      case Key of
+        VK_NUMPAD1: begin ShiftDown; ShiftLeft; end;
+        VK_NUMPAD2: begin ShiftDown; end;
+        VK_NUMPAD3: begin ShiftDown; ShiftRight; end;
+        VK_NUMPAD4: begin ShiftLeft; end;
+        VK_NUMPAD5: begin SwapBuffer; end;
+        VK_NUMPAD6: begin ShiftRight; end;
+        VK_NUMPAD7: begin ShiftUp; ShiftLeft; end;
+        VK_NUMPAD8: begin ShiftUp; end;
+        VK_NUMPAD9: begin ShiftUp; ShiftRight; end;
+      end;
     end
   else                        // No Modifier
     begin
@@ -162,6 +181,44 @@ begin
       MainForm.FormKeyDown(Self, Key, Shift);
     end;
   end;
+end;
+
+procedure SwapBuffer;
+var
+  Y: Integer;
+  X: Integer;
+begin
+  //  Transfer the existing sign out to the swapmatrix
+  for Y := 0 to Rows - 1 do
+    for X := 0 to Cols - 1 do
+      begin
+        SwapMatrix[Y,X] := LightMatrix[Y,X].Brush.Color;
+        LightMatrix[Y,X].Brush.Color := BufferMatrix[Y,X].Brush.Color;
+        BufferMatrix[Y,X].Brush.Color := SwapMatrix[Y,X]
+      end;
+end;
+
+procedure TBufferForm.FormMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  MouseDrag := True;
+  SetCapture(BufferForm.Handle);
+end;
+
+procedure TBufferForm.FormMouseMove(Sender: TObject; Shift: TShiftState; X,
+  Y: Integer);
+begin
+  if Dragging then   // Code here for handling mouse drags
+    begin
+      //
+    end;
+end;
+
+procedure TBufferForm.FormMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  MouseDrag := False;
+  ReleaseCapture;
 end;
 
 end.

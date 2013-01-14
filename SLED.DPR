@@ -9,7 +9,8 @@ uses
   MATRIX in 'MATRIX.pas',
   SEQUENCE in 'SEQUENCE.pas',
   SETUP in 'SETUP.pas' {SetupForm},
-  Buffer in 'Buffer.pas' {BufferForm};
+  Buffer in 'Buffer.pas' {BufferForm},
+  EXPORT_VIXEN in 'EXPORT_VIXEN.pas';
 
 {$R *.RES}
 

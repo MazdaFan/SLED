@@ -27,7 +27,7 @@ interface
 uses Windows, SysUtils, Graphics, StrUtils, Classes;
 
 
-  procedure CreateXMLDoc(sequence_name: string);
+  procedure ExportLOR(sequence_name: string);
 
 
 var
@@ -65,11 +65,10 @@ end;
 }
 procedure DoXMLHeader;
 begin
-  // 1st Level
-    MainForm.MyMemo.Lines.Append(concat('<?xml version="1.0" encoding="UTF-8" standalone="no"?>'));
-    MainForm.MyMemo.Lines.Append(concat('<sequence saveFileVersion="11" author="Smart LED" createdAt="', DateTimeToStr(Now) ,'">'));
-    // 2nd Level
-    MainForm.MyMemo.Lines.Append( concat(tab(1),'<channels>'));
+  With MainForm.MyMemo.Lines do
+    Append(concat('<?xml version="1.0" encoding="UTF-8" standalone="no"?>'));
+    Append(concat('<sequence saveFileVersion="11" author="Smart LED" createdAt="', DateTimeToStr(Now) ,'">'));
+    Append( concat(tab(1),'<channels>'));
 end; // end of procedure DoXMLHeader;
 
 
@@ -160,9 +159,12 @@ begin
     end;
   if NeedClose then
     begin
-    MainForm.MyMemo.Lines.Append(CString);
-    MainForm.MyMemo.Lines.AddStrings(MainForm.EffStrings.Lines);
-    MainForm.MyMemo.Lines.Append(concat(tab(2), '</channel>'));
+      With MainForm.MyMemo.Lines Do
+        begin
+          Append(CString);
+          AddStrings(MainForm.EffStrings.Lines);
+          Append(concat(tab(2), '</channel>'));
+        end;
     end
   else
     MainForm.MyMemo.Lines.Append(NCString);
@@ -255,9 +257,12 @@ begin
     end;
   if NeedClose then
     begin
-    MainForm.MyMemo.Lines.Append(CString);
-    MainForm.MyMemo.Lines.AddStrings(MainForm.EffStrings.Lines);
-    MainForm.MyMemo.Lines.Append(concat(tab(2), '</channel>'));
+      With MainForm.MyMemo.Lines Do
+        begin
+          Append(CString);
+          AddStrings(MainForm.EffStrings.Lines);
+          Append(concat(tab(2), '</channel>'));
+        end;
     end
   else
     MainForm.MyMemo.Lines.Append(NCString);
@@ -350,9 +355,12 @@ begin
     end;
   if NeedClose then
     begin
-    MainForm.MyMemo.Lines.Append(CString);
-    MainForm.MyMemo.Lines.AddStrings(MainForm.EffStrings.Lines);
-    MainForm.MyMemo.Lines.Append(concat(tab(2), '</channel>'));
+      With MainForm.MyMemo.Lines Do
+        begin
+          Append(CString);
+          AddStrings(MainForm.EffStrings.Lines);
+          Append(concat(tab(2), '</channel>'));
+        end;
     end
   else
     MainForm.MyMemo.Lines.Append(NCString);
@@ -389,7 +397,6 @@ begin
 
 
           Indexer := Indexer + 1;
-          // Third Level
           MainForm.MyMemo.Lines.Append(concat(tab(2),'<rgbChannel totalCentiseconds="',
           IntToStr(AniLength),'" name="RGB" savedIndex="',IntToStr(Indexer),'">'));
 
@@ -397,21 +404,15 @@ begin
           MyList[MyListIndex] := Indexer;
           MyListIndex := MyListIndex + 1;
           if MyListIndex = MyListMax then begin MyListMax := MyListMax + 100; SetLength(MyList, MyListMax); end;
-
-
-          // Forth Level
-          MainForm.MyMemo.Lines.Append(concat(tab(3),'<channels>'));
-
-          // Fifth Level
-          MainForm.MyMemo.Lines.Append(concat(tab(4),'<channel savedIndex="',IntToStr(Indexer-3),'"/>'));
-          MainForm.MyMemo.Lines.Append(concat(tab(4),'<channel savedIndex="',IntToStr(Indexer-2),'"/>'));
-          MainForm.MyMemo.Lines.Append(concat(tab(4),'<channel savedIndex="',IntToStr(Indexer-1),'"/>'));
-
-          // Forth Level
-          MainForm.MyMemo.Lines.Append(concat(tab(3),'</channels>'));
-
-          // Third Level
-          MainForm.MyMemo.Lines.Append(concat(tab(2),'</rgbChannel>'));
+          With MainForm.MyMemo.Lines do
+            begin
+              Append(concat(tab(3),'<channels>'));
+              Append(concat(tab(4),'<channel savedIndex="',IntToStr(Indexer-3),'"/>'));
+              Append(concat(tab(4),'<channel savedIndex="',IntToStr(Indexer-2),'"/>'));
+              Append(concat(tab(4),'<channel savedIndex="',IntToStr(Indexer-1),'"/>'));
+              Append(concat(tab(3),'</channels>'));
+              Append(concat(tab(2),'</rgbChannel>'));
+            end;
 
       end;
 
@@ -424,36 +425,26 @@ procedure DoXMLFooter;
 var
   I: integer;
 begin
-
-	Mainform.MyMemo.Lines.Append(Concat(tab(1),'</channels>'));
-	MainForm.MyMemo.Lines.Append(Concat(tab(1),'<timingGrids>'));
-	MainForm.MyMemo.Lines.Append(concat(tab(2),'<timingGrid saveID="0" name="Fixed Grid: ',FloatToStr(TimeHack/100),'" type="fixed" spacing="',IntToStr(TimeHack div 10),'"/>'));
-	MainForm.MyMemo.Lines.Append(concat(tab(1),'</timingGrids>'));
-  // Second Level
-	MainForm.MyMemo.Lines.Append(concat(tab(1),'<tracks>'));
-  // Third Level
-	MainForm.MyMemo.Lines.Append(concat(tab(2),'<track totalCentiseconds="',IntToStr(AniLength),'" timingGrid="0">'));
-  // Forth level
-	MainForm.MyMemo.Lines.Append(concat(tab(3),'<channels>'));
-  // Fifth Level
-  for I := 0 to MyListIndex - 1 do
-      MainForm.MyMemo.Lines.Append(concat(tab(4),'<channel savedIndex="',IntToStr(MyList[I]),'"/>'));
-  // Forth Level
-	MainForm.MyMemo.Lines.Append(concat(tab(3),'</channels>'));
-  // Forth Level
-	MainForm.MyMemo.Lines.Append(concat(tab(3),'<loopLevels>'));
-  // Fifth Level
-	MainForm.MyMemo.Lines.Append(concat(tab(4),'<loopLevel/>'));
-  // Forth Level
-	MainForm.MyMemo.Lines.Append(concat(tab(3),'</loopLevels>'));
-  // Third Level
-	MainForm.MyMemo.Lines.Append(concat(tab(2),'</track>'));
-  // Second Level
-	MainForm.MyMemo.Lines.Append(concat(tab(1),'</tracks>'));
-  // Second Level
-	MainForm.MyMemo.Lines.Append(concat(tab(1),'<animation rows="40" columns="60" image=""/>'));
-  // First Level
-  MainForm.MyMemo.Lines.Append('</sequence>');
+  With MainForm.MyMemo.Lines do
+    begin
+	    Append(Concat(tab(1),'</channels>'));
+	    Append(Concat(tab(1),'<timingGrids>'));
+	    Append(concat(tab(2),'<timingGrid saveID="0" name="Fixed Grid: ',FloatToStr(TimeHack/100),'" type="fixed" spacing="',IntToStr(TimeHack div 10),'"/>'));
+	    Append(concat(tab(1),'</timingGrids>'));
+	    Append(concat(tab(1),'<tracks>'));
+      Append(concat(tab(2),'<track totalCentiseconds="',IntToStr(AniLength),'" timingGrid="0">'));
+      Append(concat(tab(3),'<channels>'));
+      for I := 0 to MyListIndex - 1 do
+          Append(concat(tab(4),'<channel savedIndex="',IntToStr(MyList[I]),'"/>'));
+      Append(concat(tab(3),'</channels>'));
+      Append(concat(tab(3),'<loopLevels>'));
+      Append(concat(tab(4),'<loopLevel/>'));
+      Append(concat(tab(3),'</loopLevels>'));
+      Append(concat(tab(2),'</track>'));
+      Append(concat(tab(1),'</tracks>'));
+      Append(concat(tab(1),'<animation rows="40" columns="60" image=""/>'));
+      Append('</sequence>');
+    end;
 
 
 
@@ -461,7 +452,7 @@ end;
 
 
 
-procedure CreateXMLDoc(sequence_name: string);
+procedure ExportLOR(sequence_name: string);
 begin
   //
 

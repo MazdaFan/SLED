@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<TgConfig Version="3" SubLevelDisabled="False">
+  <Option Name="namespaceFolder.ABOUT" Type="System.String" Value="ABOUT" Category="General" IsBrowsable="False" />
+  <Option Name="namespaceFolder.MAIN" Type="System.String" Value="MAIN" Category="General" IsBrowsable="False" />
+</TgConfig>

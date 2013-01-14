@@ -24,11 +24,11 @@ unit MATRIX;
 }
 interface
 
-uses Classes, Graphics, Controls, ExtCtrls, SysUtils;
+uses Windows, Classes, Graphics, Controls, ExtCtrls, SysUtils;
 
 type
    TEventHandlers = class // create a dummy class
-       procedure ButtonClick(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+       procedure MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
    end;
 
   procedure FreeLightMatrix;
@@ -40,10 +40,11 @@ type
   procedure ShiftLeft;
 
 const
-  ShapeSize = 15;
+  ShapeSize = 10;
 
 var
   EvHandler:TEventHandlers;
+  MouseDrag: boolean;
 
 implementation
 
@@ -68,8 +69,10 @@ begin
          end;
 end;
 
+
+
 // Generic procedure for when the mouse is clicked on a light shape
-procedure TEventHandlers.ButtonClick(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TEventHandlers.MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
   begin
   // if the object that sent the click was a shape
   if Sender is TShape then
@@ -77,7 +80,7 @@ procedure TEventHandlers.ButtonClick(Sender: TObject; Button: TMouseButton; Shif
   with Sender as TShape do
   begin
   // Put if statements to catch Shift, Alt and Control here
-    if Shift = [ssShift] then     // Catch Shifted Keystrokes
+    if ssShift in Shift then     // Catch Shifted Keystrokes
       begin
         if Button = mbLeft then
           begin
@@ -88,7 +91,7 @@ procedure TEventHandlers.ButtonClick(Sender: TObject; Button: TMouseButton; Shif
             //
           end;
       end
-    else if Shift = [ssAlt] then       // Catch Alt Keypresses
+    else if ssAlt in Shift then       // Catch Alt Keypresses
       begin
         if Button = mbLeft then
           begin
@@ -99,12 +102,14 @@ procedure TEventHandlers.ButtonClick(Sender: TObject; Button: TMouseButton; Shif
             //
           end;
       end
-    else if Shift = [ssCtrl] then   // Catch Ctrl Keypresses
+    else if ssCtrl in Shift then   // Catch Ctrl Keypresses
       begin
         if Button = mbLeft then
           begin
             //  If we have a Ctrl Left Click, then change the current color to what is clicked.
             CurrentColor := Brush.Color;
+            MouseDrag := True;
+            SetCapture(Parent.Handle);
           end
         else
           begin
@@ -161,7 +166,7 @@ begin
           LightMatrix[Y, X].Left := ((X*ShapeSize)+100);
           LightMatrix[Y, X].Top := ((Y*ShapeSize)+100);
           LightMatrix[Y, X].DragKind := dkDrag;
-          LightMatrix[Y, X].OnMouseDown := EVHandler.ButtonClick;
+          LightMatrix[Y, X].OnMouseDown := EVHandler.MouseDown;
           LightMatrix[Y, X].Parent := MainForm;
       end;
 end;

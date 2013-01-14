@@ -3,8 +3,8 @@ object BufferForm: TBufferForm
   Top = 0
   AutoSize = True
   Caption = 'Buffer'
-  ClientHeight = 162
-  ClientWidth = 249
+  ClientHeight = 151
+  ClientWidth = 241
   Color = clBtnFace
   Constraints.MinHeight = 189
   Constraints.MinWidth = 257
@@ -14,9 +14,13 @@ object BufferForm: TBufferForm
   Font.Name = 'Tahoma'
   Font.Style = []
   FormStyle = fsStayOnTop
+  KeyPreview = True
   OldCreateOrder = False
   Visible = True
   OnKeyDown = FormKeyDown
+  OnMouseDown = FormMouseDown
+  OnMouseMove = FormMouseMove
+  OnMouseUp = FormMouseUp
   PixelsPerInch = 96
   TextHeight = 13
   object Shape1: TShape

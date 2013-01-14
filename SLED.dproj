@@ -60,6 +60,19 @@
 			<DCCReference Include="Buffer.pas">
 				<Form>BufferForm</Form>
 			</DCCReference>
+			<DCCReference Include="EXPORT_VIXEN.pas"/>
+			<None Include="ModelSupport_SLED\default.txaPackage"/>
+			<None Include="ModelSupport_SLED\default.txvpck"/>
+			<None Include="ModelSupport_SLED\ABOUT\default.txvpck"/>
+			<None Include="ModelSupport_SLED\BUFFER\default.txvpck"/>
+			<None Include="ModelSupport_SLED\EXPORT_LOR\default.txvpck"/>
+			<None Include="ModelSupport_SLED\FILE_IO\default.txvpck"/>
+			<None Include="ModelSupport_SLED\MAIN\default.txvpck"/>
+			<None Include="ModelSupport_SLED\MATRIX\default.txvpck"/>
+			<None Include="ModelSupport_SLED\SEQUENCE\default.txvpck"/>
+			<None Include="ModelSupport_SLED\SETUP\default.txvpck"/>
+			<None Include="ModelSupport_SLED\ABOUT\default.txaPackage"/>
+			<None Include="ModelSupport_SLED\MAIN\default.txaPackage"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -115,6 +128,7 @@
 						<VersionInfoKeys Name="PrivateBuild"/>
 					</VersionInfoKeys>
 				</Delphi.Personality>
+				<ModelSupport>True</ModelSupport>
 			</BorlandProject>
 			<ProjectFileVersion>12</ProjectFileVersion>
 		</ProjectExtensions>
