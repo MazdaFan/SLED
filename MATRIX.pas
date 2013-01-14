@@ -76,19 +76,57 @@ procedure TEventHandlers.ButtonClick(Sender: TObject; Button: TMouseButton; Shif
   begin
   with Sender as TShape do
   begin
-  if Button = mbLeft then
-    begin
-      // Set its color to the current color and refresh it
-      Brush.Color := CurrentColor;
-      Refresh;
-      // MainForm.Label2.Caption := IntToStr(Tag);         // Debug to check channels in the shapes.tag
-    end
-  else
-    begin
-      Brush.Color := clBlack;
-      Refresh;
+  // Put if statements to catch Shift, Alt and Control here
+    if Shift = [ssShift] then     // Catch Shifted Keystrokes
+      begin
+        if Button = mbLeft then
+          begin
+            //
+          end
+        else
+          begin
+            //
+          end;
+      end
+    else if Shift = [ssAlt] then       // Catch Alt Keypresses
+      begin
+        if Button = mbLeft then
+          begin
+            //
+          end
+        else
+          begin
+            //
+          end;
+      end
+    else if Shift = [ssCtrl] then   // Catch Ctrl Keypresses
+      begin
+        if Button = mbLeft then
+          begin
+            //  If we have a Ctrl Left Click, then change the current color to what is clicked.
+            CurrentColor := Brush.Color;
+          end
+        else
+          begin
+            //
+          end;
+      end
+    else                        // No Modifier
+      begin
+        if Button = mbLeft then
+          begin
+            // Set its color to the current color and refresh it
+            Brush.Color := CurrentColor;
+            Refresh;
+            // MainForm.Label2.Caption := IntToStr(Tag);         // Debug to check channels in the shapes.tag
+          end
+        else
+          begin
+            Brush.Color := clBlack;
+            Refresh;
+          end;
+      end;
     end;
-  end;
   end;
 end;
 
@@ -171,8 +209,14 @@ begin
 end;
 
 {
-  SHIFTUP
-  Moves each color one row up.  If its the last row (bottom row) sets it to black
+********************************************************************************
+*
+*  SHIFTUP
+*
+*  Moves each color one row up.  If its the last row (bottom row) sets it
+*  the color of the top of the buffer row.
+*
+********************************************************************************
 }
 
 procedure ShiftUp;
@@ -183,18 +227,23 @@ begin
 
     for y := 0 to Rows - 1 do
       for X := 0 to Cols - 1 do
-        if Y < Rows-2 then // we haven't hit the last row yet
+        if Y < Rows-1 then // we haven't hit the last row yet
             LightMatrix[Y, X].Brush.Color := LightMatrix[Y+1, X].Brush.Color
           else
-            LightMatrix[Y,X].Brush.Color := BufferMatrix[1, X].Brush.Color;
+            LightMatrix[Y,X].Brush.Color := BufferMatrix[0, X].Brush.Color;
 
     ShiftBufferUp;
-end;
+end; // ShiftUp
 
 
 {
-  SHIFTDOWN
-  Moves each color one space down in the matrix.  Sets the top items (X+1 < Columns) to black
+********************************************************************************
+*
+*  SHIFTDOWN
+*
+*  Moves each color one space down in the matrix.  Sets the top items (X+1 < Columns) to black
+*
+********************************************************************************
 }
 procedure ShiftDown;
 var

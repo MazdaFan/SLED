@@ -41,11 +41,11 @@ uses MAIN, Matrix, BUFFER, SETUP;
 procedure LoadSequence(seq_name: TFileName);
 var
 F: File of integer;
-I: integer;
-J: integer;
+Fr: integer;
+X: integer;
 color: integer;
 LRL, DUD: integer;
-  K: Integer;
+  Y: Integer;
 begin
   //
   AssignFile(F, seq_name);
@@ -63,31 +63,33 @@ begin
     if DUD = 1 then IsDUD := True else IsDUD := False;
 
     SetLength(SASequence, Rows, Cols, CurrentBuffer+1);
-    for I := 0 to Rows - 1 do
-      for J := 0 to Cols - 1 do
-        for K := 0 to LastFrame do
+    for Fr := 0 to LastFrame do
+      for Y := 0 to Rows - 1 do
+        for X := 0 to Cols - 1 do
 
           begin
           Read(F, color);
-          SASequence[I,J,K] := HexToTColor(IntToHex(color,6));
+          SASequence[Y,X,Fr] := HexToTColor(IntToHex(color,6));
           end;
     CurrentBuffer := CurrentBuffer + AddFrames;
     SetLength(SASequence, Rows, Cols, CurrentBuffer);
     Frame := LastFrame;
     FillLightMatrix;
-//    CreateBuffer;
+    CreateBuffer;
+    SetLength(ChannelArray, Rows, Cols);
     FillChannels;
   Finally
     Close(F);
   end;
+  Frame := 0;
 end;
 
 procedure SaveSequence(seq_name: TFileName);
 var
   F: File of integer;
-  I: Integer;
-  J: Integer;
-  K: Integer;
+  Y: Integer;
+  X: Integer;
+  Fr: Integer;
   color: integer;
   LRL, DUD: integer;
 begin
@@ -106,11 +108,11 @@ begin
     Write(F, DUD);
     Write(F, TimeHack);
     Write(F, StartChannel);
-    for I := 0 to Rows - 1 do
-      for J := 0 to Cols - 1 do
-        for K := 0 to LastFrame do
+    for Fr := 0 to LastFrame do
+      for Y := 0 to Rows - 1 do
+        for X := 0 to Cols - 1 do
           begin
-            color := HexToInt(TcolorToHex(SASequence[I,J,K]));
+            color := HexToInt(TcolorToHex(SASequence[Y,X,Fr]));
             Write(F, color);
           end;
   finally

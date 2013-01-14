@@ -20,7 +20,6 @@ object MainForm: TMainForm
   OnClose = FormClose
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
-  OnMouseEnter = FormMouseEnter
   PixelsPerInch = 96
   TextHeight = 16
   object Label1: TLabel
@@ -112,6 +111,32 @@ object MainForm: TMainForm
     ShowHint = False
     TabOrder = 3
     Visible = False
+    WantReturns = False
+    WantTabs = True
+    WordWrap = False
+  end
+  object EffStrings: TMemo
+    Left = 176
+    Top = 595
+    Width = 17
+    Height = 16
+    ParentCustomHint = False
+    TabStop = False
+    BevelEdges = []
+    BevelInner = bvNone
+    BevelOuter = bvNone
+    BorderStyle = bsNone
+    Ctl3D = True
+    DoubleBuffered = True
+    Lines.Strings = (
+      '')
+    ParentCtl3D = False
+    ParentDoubleBuffered = False
+    ParentShowHint = False
+    ShowHint = False
+    TabOrder = 4
+    Visible = False
+    WantReturns = False
     WantTabs = True
     WordWrap = False
   end
@@ -122,25 +147,59 @@ object MainForm: TMainForm
     object File1: TMenuItem
       Caption = '&File'
       Hint = 'File related commands'
-      object FileNewItem: TMenuItem
-        Action = FileNew1
+      object New1: TMenuItem
+        Caption = 'New'
+        OnClick = New1Click
       end
-      object FileOpenItem: TMenuItem
-        Action = FileOpen1
+      object FileNewItem: TMenuItem
+        Caption = 'Open'
+        Hint = 'Open|Open a file'
+        ImageIndex = 7
+        object OpenSequence1: TMenuItem
+          Caption = 'Sequence'
+          OnClick = OpenSequence1Click
+        end
+        object OpenTemplate1: TMenuItem
+          Caption = 'Template'
+          OnClick = OpenTemplate1Click
+        end
       end
       object FileSaveItem: TMenuItem
-        Action = FileSave1
+        Caption = '&Save'
+        Hint = 'Save|Save current file'
+        ImageIndex = 8
+        object SaveSequence1: TMenuItem
+          Caption = 'Sequence'
+          OnClick = SaveSequence1Click
+        end
+        object SaveTemplate1: TMenuItem
+          Caption = 'Template'
+        end
       end
-      object FileSaveAsItem: TMenuItem
-        Action = FileSaveAs1
+      object FileSaveAsItem1: TMenuItem
+        Caption = 'Save As...'
+        Hint = 'Save As|Save current file with different name'
       end
-      object Pla1: TMenuItem
+      object Play1: TMenuItem
         Caption = 'Play'
-        OnClick = Pla1Click
+        OnClick = Play1Click
       end
-      object DisplaySequence1: TMenuItem
+      object ExportSequence1: TMenuItem
         Caption = 'Export Sequence'
-        OnClick = DisplaySequence1Click
+        object AsLORS31: TMenuItem
+          Caption = 'As LOR S3'
+          OnClick = AsLORS31Click
+        end
+        object AsVixen1: TMenuItem
+          Caption = 'As Vixen'
+          Enabled = False
+          OnClick = AsVixen1Click
+        end
+        object AsLSP1: TMenuItem
+          Caption = 'As LSP'
+          Enabled = False
+          OnClick = AsLSP1Click
+        end
       end
       object N1: TMenuItem
         Caption = '-'
@@ -180,7 +239,6 @@ object MainForm: TMainForm
       Hint = 'New|Create a new file'
       ImageIndex = 6
       ShortCut = 16462
-      OnExecute = FileNew1Execute
     end
     object FileOpen1: TAction
       Category = 'File'
@@ -188,7 +246,6 @@ object MainForm: TMainForm
       Hint = 'Open|Open a file'
       ImageIndex = 7
       ShortCut = 16463
-      OnExecute = FileOpen1Execute
     end
     object FileSave1: TAction
       Category = 'File'
@@ -196,13 +253,11 @@ object MainForm: TMainForm
       Hint = 'Save|Save current file'
       ImageIndex = 8
       ShortCut = 16467
-      OnExecute = FileSave1Execute
     end
     object FileSaveAs1: TAction
       Category = 'File'
       Caption = 'Save &As...'
       Hint = 'Save As|Save current file with different name'
-      OnExecute = FileSave1Execute
     end
     object FileExit1: TAction
       Category = 'File'
@@ -244,7 +299,7 @@ object MainForm: TMainForm
     Left = 880
     Top = 592
     Bitmap = {
-      494C01010F002800280010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010F003400340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

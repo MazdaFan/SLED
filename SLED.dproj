@@ -50,7 +50,7 @@
 			<DCCReference Include="ABOUT.PAS">
 				<Form>AboutBox</Form>
 			</DCCReference>
-			<DCCReference Include="EXPORT_XML.pas"/>
+			<DCCReference Include="EXPORT_LOR.pas"/>
 			<DCCReference Include="FILE_IO.pas"/>
 			<DCCReference Include="MATRIX.pas"/>
 			<DCCReference Include="SEQUENCE.pas"/>

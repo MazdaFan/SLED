@@ -1,0 +1,39 @@
+unit BUFFER;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs;
+
+type
+  TForm1 = class(TForm)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    procedure CreateBuffer;
+  end;
+
+var
+  Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+
+uses MAIN, MATRIX;
+
+procedure CreateBuffer;
+var
+  Y: Integer;
+  X: Integer;
+begin
+  //
+  Matrix.FillShapeArray(BufferMatrix);
+  for Y := 0 to Rows - 1 do
+    for X := 0 to Cols - 1 do
+      BufferMatrix[Y, X].Parent := TForm1;
+end;
+
+end.

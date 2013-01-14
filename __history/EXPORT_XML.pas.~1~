@@ -1,0 +1,284 @@
+unit EXPORT_XML;
+{
+* FILENAME: Export_XML.pas
+* Date Created: 1/5/2013
+* Created By: Jamie Tomlinson (JRT)
+*
+* Purpose:
+*
+* Uses:
+*   Main.pas
+*
+* Procedures/Functions:
+*     procedure CreateXMLDoc(sequence_name: string);  // Creates and writes an XML document to disk using variables
+*                                                     // from the other modules, and on/off times from GetTimes
+*
+*     procedure GetTimes(Channel: integer);  // Steps through the LightSequence array and determines our on and
+*                                               off times for each channel.
+*
+* Variables:
+*      Centiseconds: array of array of integer;   // Our start and stop times for a channel in centiseconds
+*
+* Changes:
+*   1/7/13 - Changed to use TMemo from MainForm so that I had TStrings to store XML data to.
+}
+interface
+
+uses Windows, SysUtils, Graphics;
+
+
+  procedure CreateXMLDoc(sequence_name: string);
+
+
+var
+  Centiseconds: array of array of integer;
+  Indexer: integer;
+
+
+implementation
+
+
+
+uses MAIN;
+
+{
+ DO XML HEADER
+ Write an XML header to MainForm.MyMemo.Lines
+}
+procedure DoXMLHeader;
+begin
+  //
+    MainForm.MyMemo.Lines.Append('<?xml version="1.0" encoding="UTF-8" standalone="no"?>');
+    MainForm.MyMemo.Lines.Append(concat('<sequence saveFileVersion="11" author="Smart LED" createdAt="', DateToStr(now), '">'));
+    MainForm.MyMemo.Lines.Append( '  <channels>');
+end; // end of procedure DoXMLHeader;
+
+
+procedure GetRed(Channel: integer);
+var
+  ChannelOn: Boolean;
+  ThisColor, OldColor: TColor;
+  I: Integer;
+  OnTime, OffTime, Intensity: integer;
+begin
+  //
+  ChannelOn := False;
+  Intensity := 0;
+  OldColor := clBlack;
+  OnTime := 0;
+
+  for I := 0 to LastFrame - 1 do
+    begin
+      ThisColor := LightSequence[Channel, I];
+
+
+      if ThisColor <> OldColor then  // Colors have changed
+        begin
+          if ChannelOn then
+            begin
+              OffTime := (TimeHack*I)+TimeHack;
+              ChannelOn := False;
+              if Intensity > 0 then
+                    MainForm.MyMemo.Lines.Append(concat('<effect type="intensity" startCentisecond="',IntToStr(OnTime),'" endCentisecond="',IntToStr(OffTime),'" intensity="',IntToStr(Intensity),'"/>'))
+            end
+        else  // there is a color there
+            begin
+              OnTime := TimeHack*I;
+              ChannelOn := True;
+              Intensity := trunc((GetRValue(ThisColor)/255)*100);
+              OldColor := ThisColor;
+            end;
+        end;  // end if-else loop
+
+
+
+    end; // end For loop (lastframe)
+
+end; // end of procedure GetRed(Channel: integer);
+
+procedure GetGreen(Channel: integer);
+var
+  ChannelOn: Boolean;
+  ThisColor, OldColor: TColor;
+  I: Integer;
+  OnTime, OffTime, Intensity: integer;
+begin
+  //  Initialize
+  ChannelOn := False;
+  Intensity := 0;
+  OldColor := clBlack;
+  OnTime := 0;
+
+  for I := 0 to LastFrame - 1 do
+    begin
+      ThisColor := LightSequence[Channel, I];
+
+
+      if ThisColor <> OldColor then  // Colors have changed
+        begin
+          if ChannelOn then
+            begin
+              OffTime := (TimeHack*I)+TimeHack;
+              ChannelOn := False;
+              if Intensity > 0 then
+                    MainForm.MyMemo.Lines.Append(concat('<effect type="intensity" startCentisecond="',IntToStr(OnTime),'" endCentisecond="',IntToStr(OffTime),'" intensity="',IntToStr(Intensity),'"/>'))
+            end
+        else  // there is a color there
+            begin
+              OnTime := TimeHack*I;
+              ChannelOn := True;
+              Intensity := trunc((GetGValue(ThisColor)/255)*100);
+              OldColor := ThisColor;
+            end;
+        end;  // end if-else loop
+
+
+
+    end; // end For loop (lastframe)
+
+end; // end procedure GetGreen(Channel: integer);
+
+procedure GetBlue(Channel: integer);
+var
+  ChannelOn: Boolean;
+  ThisColor, OldColor: TColor;
+  I: Integer;
+  OnTime, OffTime, Intensity: integer;
+begin
+  //
+  ChannelOn := False;
+  Intensity := 0;
+  OldColor := clBlack;
+  OnTime := 0;
+
+  for I := 0 to LastFrame - 1 do
+    begin
+      ThisColor := LightSequence[Channel, I];
+
+
+      if ThisColor <> OldColor then  // Colors have changed
+        begin
+          if ChannelOn then
+            begin
+              OffTime := (TimeHack*I)+TimeHack;
+              ChannelOn := False;
+                            if Intensity > 0 then
+                    MainForm.MyMemo.Lines.Append(concat('<effect type="intensity" startCentisecond="',IntToStr(OnTime),'" endCentisecond="',IntToStr(OffTime),'" intensity="',IntToStr(Intensity),'"/>'))
+            end
+        else  // there is a color there
+            begin
+              OnTime := TimeHack*I;
+              ChannelOn := True;
+              Intensity := trunc((GetGValue(ThisColor)/255)*100);
+              OldColor := ThisColor;
+            end;
+        end;  // end if-else loop
+
+
+
+    end; // end For loop (lastframe)
+
+end; // end procedure GetBlue(Channel: integer);
+
+
+{
+ DO XML Channels
+ Takes care of outputting the individual as well as the RGB channels
+ to MainForm.MyMemo.Lines.
+}
+procedure DoXMLChannels;
+var
+
+  AniLength: integer;
+  network: integer;
+  circuit: integer;
+
+  X: integer;
+begin
+  //
+    AniLength := (TimeHack*LastFrame);
+    for X := 0 to ((Rows*Cols) - 1) do   // Step through LightArray
+      begin
+        network := (LightArray[X].Tag div 512) + 1;
+        circuit := (LightArray[X].Tag - ((network - 1)* 512))+1;
+
+
+        // Write the originating line for the red channel
+        if circuit > 512 then begin network := network + 1; circuit := circuit - 512; end;
+        Indexer := Indexer+1;
+        MainForm.MyMemo.Lines.Append(concat('   <channel name="',IntToStr(Network),' ',IntToStr(circuit) ,
+        '(R)" color="255" centiseconds="',IntToStr(AniLength),
+        '" deviceType="DMX Universe" circuit="',IntToStr(circuit),
+        '" network="',IntToStr(network),'" savedIndex="', InttoStr(Indexer), '/">'));
+
+        // Make a call to do the on/off times here
+        GetRed(X);
+
+        MainForm.MyMemo.Lines.Append(concat('   </channel>'));
+
+
+
+        // Write the originating line for the green channel
+        circuit := circuit + 1;
+        if circuit > 512 then begin network := network + 1; circuit := circuit - 512; end;
+        Indexer := Indexer+1;
+        MainForm.MyMemo.Lines.Append(concat('   <channel name="',IntToStr(Network),' ',IntToStr(circuit) ,
+        '(G)" color="65280" centiseconds="',IntToStr(AniLength),
+        '" deviceType="DMX Universe" circuit="',IntToStr(circuit),
+        '" network="',IntToStr(network),'" savedIndex="', InttoStr(Indexer), '/">'));
+
+        // Make a call to do the on/off times here
+        GetGreen(X);
+
+        MainForm.MyMemo.Lines.Append(concat('   </channel>'));
+
+
+
+        // Write the originating line for the blue channel
+        circuit := circuit + 1;
+        if circuit > 512 then begin network := network + 1; circuit := circuit - 512; end;
+        Indexer := Indexer+1;
+        MainForm.MyMemo.Lines.Append(concat('   <channel name="',IntToStr(Network),' ',IntToStr(circuit) ,
+        '(B)" color="16711680" centiseconds="',IntToStr(AniLength),
+        '" deviceType="DMX Universe" circuit="',IntToStr(circuit),
+        '" network="',IntToStr(network),'" savedIndex="', InttoStr(Indexer), '/">'));
+
+        // Make a call to do the on/off times here
+        GetBlue(X);
+
+       MainForm.MyMemo.Lines.Append('   </channel>');  // 2 tabs
+
+       Indexer := Indexer + 1;
+       MainForm.MyMemo.Lines.Append(concat('  <rgbChannel totalCentiseconds="',
+       IntToStr(AniLength),'" name="RGB" savedIndex="',IntToStr(Indexer),'">'));
+
+       MainForm.MyMemo.Lines.Append('    <channels>');
+
+       MainForm.MyMemo.Lines.Append(concat('        <channel savedIndex="',IntToStr(Indexer-3),'"/>'));
+       MainForm.MyMemo.Lines.Append(concat('        <channel savedIndex="',IntToStr(Indexer-2),'"/>'));
+       MainForm.MyMemo.Lines.Append(concat('        <channel savedIndex="',IntToStr(Indexer-1),'"/>'));
+
+       MainForm.MyMemo.Lines.Append('    </channels>');
+
+       MainForm.MyMemo.Lines.Append('  </rgbChannel>');
+
+      end;
+
+
+end;      // end of procedure DoXMLChannels;
+
+
+procedure CreateXMLDoc(sequence_name: string);
+begin
+  //
+  Indexer := -1;      // Our "SavedIndex" for LOR's XML file
+  DoXMLHeader;
+  DoXMLChannels;
+
+  MainForm.MyMemo.Lines.SaveToFile(sequence_name);
+
+
+end;    // end of procedure CreateXMLDoc
+
+
+end.  // end of file

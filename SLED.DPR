@@ -4,7 +4,7 @@ uses
   Forms,
   MAIN in 'MAIN.PAS' {SDIAppForm},
   ABOUT in 'ABOUT.PAS' {AboutBox},
-  EXPORT_XML in 'EXPORT_XML.pas',
+  EXPORT_LOR in 'EXPORT_LOR.pas',
   FILE_IO in 'FILE_IO.pas',
   MATRIX in 'MATRIX.pas',
   SEQUENCE in 'SEQUENCE.pas',

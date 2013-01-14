@@ -1,0 +1,245 @@
+unit MATRIX;
+{
+* FILENAME: Matrix.pas
+* Date Created: 1/5/2013
+* Created By: Jamie Tomlinson (JRT)
+*
+* Purpose:
+*
+* Uses: Main.pas
+*       Setup.pas
+*
+* Procedures/Functions:
+*   procedure FreeLights;
+*   procedure FillShapeArray;
+*   procedure ShiftUp;
+*   procedure ShiftDown;
+*   procedure ShiftRight;
+*   procedure ShiftLeft;
+*
+* Variables:
+*  EvHandler:TEventHandlers;
+*
+* Changes:
+}
+interface
+
+uses Classes, Graphics, Controls, ExtCtrls, SysUtils;
+
+type
+   TEventHandlers = class // create a dummy class
+       procedure ButtonClick(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+   end;
+
+  procedure FreeLights;
+  procedure FillShapeArray;
+  procedure ShiftUp;
+  procedure ShiftDown;
+  procedure ShiftRight;
+  procedure ShiftLeft;
+
+const
+  ShapeSize = 10;
+
+var
+  EvHandler:TEventHandlers;
+
+implementation
+
+uses MAIN, Setup;
+
+Procedure FreeLights;
+var
+  X: Integer;
+begin
+    // Step through the array of lights and free any previous instance.
+   for X := Low(LightArray) to High(LightArray)  do
+        begin
+         LightArray[X].Free;
+          LightArray[X] := nil;
+        end;
+end;
+
+// Generic procedure for when the mouse is clicked on a light shape
+procedure TEventHandlers.ButtonClick(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+  begin
+  // if the object that sent the click was a shape
+  if Sender is TShape then
+  begin
+  with Sender as TShape do
+  begin
+  // Set its color to the current color and refresh it
+  Brush.Color := CurrentColor;
+  Refresh;
+  MainForm.Label2.Caption := IntToStr(Tag);         // Debug to check channels in the shapes.tag
+  end;
+  end;
+end;
+
+
+{
+  FILL SHAPE ARRAY
+  This procedure dynamically creates our shapes (lights) and forms them
+  into a matrix described by the variables Cols and Rows.  The shapes have a
+  parent set to "nil", so they must be free'd manually.  Closing the form without
+  freeing the shapes will result in a HUGE memory leak, therefore the FORMCLOSE
+  call has FREELIGHTS, which will destroy each shape, and free its memory.
+}
+procedure FillShapeArray;
+var
+  Y: Integer;
+  X: Integer;
+  I: Integer;
+  C: Integer;
+begin
+  //  Get rid of the old tshapes
+  FreeLights;
+  SetLength(LightArray,((Rows*Cols)-1));
+  // Now lets start filling our grid
+  I := 0;             // This is a counter to determine where we place each instance in LightArray[].
+  for Y := 0 to Rows - 1 do
+    for X := 0 to Cols - 1 do
+      // We need to set all of the properties of each light
+      begin
+          LightArray[I] := TShape.Create(nil);
+          LightArray[I].Width := ShapeSize;
+          LightArray[I].Height := ShapeSize;
+          LightArray[I].Shape := stCircle;
+          LightArray[I].Brush.Color := clBlack;
+          LightArray[I].Left := ((X*ShapeSize)+100);
+          LightArray[I].Top := ((Y*ShapeSize)+100);
+          LightArray[I].OnMouseDown := EVHandler.ButtonClick;
+          LightArray[I].Parent := MainForm;
+          I := I + 1;
+      end;
+
+  // Add our channel numbers into the Tag attribute of each "light"
+  if IsLRL = True then
+    begin
+      C := 0;
+      for Y := 0 to Rows - 1 do
+        begin
+      // if Y mod 2 = 1 then count up from y*col to y*col + col
+      // eg: y=2 and cols=32 so count up from (2*32) to ((2*32)+32)-1
+      // = 64 to 64+32-1 = 64 to 95
+      // The channel would be the (StartChannel + x*3), so if the startchannel = 1
+      // and x=1 then the channel would be (1+1*3) = 4.  The second element would be channel 4
+        if (Y+1) Mod 2 = 1 then
+          for x := (Y*Cols) to ((Y*Cols)+Cols) - 1 do
+            begin
+              LightArray[X].Tag := (StartChannel + (C*3));
+              C := C+1;
+            end
+      // otherwise count down from y*col+col to y*col
+      // eg: y=1 and cols=32 so  countdown from ((1*32)+32)-1 to (1*32)
+      // = (32+32-1) downto (32) = 63 downto 32
+      // The channel would be the (startchannel + x*3), so if x=32 and the startchannel = 1
+      // then the channel would be (1+32*3) = 97
+        else
+          for x := ((Y*Cols)+Cols) - 1 downto (Y*Cols) do
+            begin
+              LightArray[X].Tag := (StartChannel + (C*3));
+              C := C+1;
+            end;
+        end;
+    end
+  else
+    begin
+      for I := 0 to (Rows*Cols) -1 do
+        begin
+          LightArray[I].Tag := (StartChannel + (I*3));
+        end;
+    end;
+
+
+
+end;
+
+{
+  SHIFTUP
+  Moves each color one row up.  If its the last row (bottom row) sets it to black
+}
+
+procedure ShiftUp;
+var
+  x: Integer;
+begin
+  // Again, using Rows*Columns - 1 instead of HIGH(Array).
+  for x := 0 to ((Rows * Cols) - 1) do
+    // Using X+1 we reference the item number on the screen instead of the item in the array
+    // If X is greater than Rows-1*Columns (example: 5 total rows, 5 total columns = 25 items
+    // Rows-1*columns = (5-1)*5 = 4*5 = 20
+    // if X is greater an 20, then we are on the bottom row (items 21-25).  Turn it black.
+    if (X+1) > ((Rows-1)*Cols) then
+      LightArray[X].Brush.Color := clBlack
+    else
+      // Otherwise, copy the color from the item below us
+      LightArray[X].Brush.Color := LightArray[X+Cols].Brush.Color;
+end;
+
+
+{
+  SHIFTDOWN
+  Moves each color one space down in the matrix.  Sets the top items (X+1 < Columns) to black
+}
+procedure ShiftDown;
+var
+  X: Integer;
+begin
+  //  No more HIGH(array) for the length... just use rows* columns - 1
+  for X := ((Rows*Cols)-1) downto 0 do
+    // If X is less than the number of columns, then it must be the top row.  Turn it black.
+    if X < Cols then
+      LightArray[X].Brush.Color := clBlack
+    else
+      //Otherwise, copy the color from the item above.
+      LightArray[X].Brush.Color := LightArray[X-Cols].Brush.Color;
+end;
+
+
+{
+   SHIFTRIGHT
+   Moves each color one space to the right.  Sets the far left items to black.
+}
+procedure ShiftRight;
+var
+  X: Integer;
+begin
+  // Step backwards through the array
+  for X := ((Rows*Cols)-1) downto 0 do
+    // As long as we aren't at the first item in the list
+    if X > 0 then               // Not sure if this is really required anymore with the new indexing.
+      // Used X+1 to make mod calls easier. X+1 is the acual positon on the screen, not the array
+      // If X+1 mod Cols = 1, then we are at the beginning of the row.  Set the color to black.
+      if (X + 1) mod cols = 1  then
+        LightArray[X].Brush.Color := clBlack
+      else
+        // Otherwise, copy the color from the shape on the left.
+        LightArray[X].Brush.Color := LightArray[X-1].Brush.Color
+    else   // If we hit the first item in the list, turn it black
+      LightArray[X].Brush.Color := clBlack;
+end;
+
+
+
+
+{
+  SHIFTLEFT
+  Moves each color one space to the left.  Sets the far right items to black.
+}
+procedure ShiftLeft;
+var
+  X: Integer;
+begin
+  // Stopped trying to use HIGH(LightArray) for top of array and just used (Row*Col)-1
+  for X := 0 to ((Rows*Cols) - 1) do
+    // To make mod calls easier, add 1 to X for a position number in the grid
+    // If we have no remainder, then we are at the end of the row, set color to black
+    if (X+1) mod cols = 0 then
+      LightArray[X].Brush.Color := clBlack
+    else
+      // Otherwise, copy the color from the shape on the right.
+      LightArray[X].Brush.Color := LightArray[X+1].Brush.Color;
+end;
+
+end.

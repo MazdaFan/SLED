@@ -74,153 +74,171 @@ begin
 end; // end of procedure DoXMLHeader;
 
 
+
+{
+*
+*  GET RED(X,Y)
+*
+}
 procedure GetRed(Y, X: integer);
 var
   ChannelOn, NeedClose: Boolean;
-  ThisColor, OldColor: TColor;
-  I: Integer;
-  OnTime, OffTime, Intensity: integer;
+  OnTime, OffTime: integer;
+  Intensity, LastIntensity: integer;
+  Fr: Integer;
+  Red: Integer;
+  ES: string;
 begin
   //
-  NeedClose := False;
-  ChannelOn := False;
+  LastIntensity := 0;
   Intensity := 0;
-  OldColor := clBlack;
   OnTime := 0;
+  OffTime := 0;
 
-  for I := 0 to LastFrame do
+
+  for Fr := 0 to LastFrame do
     begin
-      ThisColor := SASequence[Y, X, I];
-
-
-      if ThisColor <> OldColor then  // Colors have changed
+    Red := GetRValue(SASequence[Y, X, Fr]);
+    Intensity := Trunc((Red / 255)*100);
+    if Intensity > 0 then
+      begin
+        ChannelOn := True;
+        LastIntensity := Intensity;
+        OnTime := (TimeHack * Fr);
+        ES := concat(tab(3), '<effect type="intensity" startCentisecond="', IntToStr(OnTime));
+      end
+    else
+      if intensity <> lastintensity then
         begin
-          if ChannelOn then
-            if Intensity > 0 then
-              begin
-                OffTime := (TimeHack*I)+TimeHack;
-                ChannelOn := False;
-                // Forth Level
-                MainForm.MyMemo.Lines.Append(concat(tab(3),'<effect type="intensity" startCentisecond="',IntToStr(OnTime),'" endCentisecond="',IntToStr(OffTime),'" intensity="',IntToStr(Intensity),'"/>'));
-                NeedClose := True;
-            end;
-        end
-        else  // there is a color there
+          ChannelOn := False;
+          OffTime := (TimeHack * Fr);
+          ES := concat(ES, '" endCentisecond="',IntToStr(OffTime),'" intensity="',IntToStr(LastIntensity),'"/>');
+          MainForm.MyMemo.Lines.Append(ES);
+          ES := '';
+          NeedClose := True;
+          if Intensity > 0 then
             begin
-              OnTime := TimeHack*I;
               ChannelOn := True;
-              Intensity := trunc((GetRValue(ThisColor)/255)*100);
-              OldColor := ThisColor;
+              OnTime := (TimeHack * Fr);
+              LastIntensity := Intensity;
+              ES := concat(tab(3), '<effect type="intensity" startCentisecond="', IntToStr(OnTime));
             end;
-
-
-
-
-    end; // end For loop (lastframe)
-    if NeedClose = True then MainForm.MyMemo.Lines.Append(concat(tab(2),'</channel>'));
-
-
-end; // end of procedure GetRed(Channel: integer);
-
-procedure GetGreen(Y, X: integer);
-var
-  ChannelOn, NeedClose: Boolean;
-  ThisColor, OldColor: TColor;
-  I: Integer;
-  OnTime, OffTime, Intensity: integer;
-begin
-  //  Initialize
-  NeedClose := False;
-  ChannelOn := False;
-  Intensity := 0;
-  OldColor := clBlack;
-  OnTime := 0;
-
-  for I := 0 to LastFrame do
-    begin
-      ThisColor := SASequence[Y, X, I];
-
-
-      if ThisColor <> OldColor then  // Colors have changed
-        begin
-          if ChannelOn then
-            if Intensity > 0 then
-              begin
-                NeedClose := True;
-                OffTime := (TimeHack*I)+TimeHack;
-                ChannelOn := False;
-                // Forth Level
-                MainForm.MyMemo.Lines.Append(concat(tab(3),'<effect type="intensity" startCentisecond="',IntToStr(OnTime),'" endCentisecond="',IntToStr(OffTime),'" intensity="',IntToStr(Intensity),'"/>'))
-              end;
-        end
-        else  // there is a color there
-            begin
-              OnTime := TimeHack*I;
-              ChannelOn := True;
-              Intensity := trunc((GetGValue(ThisColor)/255)*100);
-              OldColor := ThisColor;
-            end;
-
-
-    end; // end For loop (lastframe)
-    if NeedClose = True then MainForm.MyMemo.Lines.Append(concat(tab(2),'</channel>'));
-
-
-end; // end procedure GetGreen(Channel: integer);
-
-procedure GetBlue(Y, X: integer);
-var
-  ChannelOn, NeedClose: Boolean;
-  ThisColor, OldColor: TColor;
-  I: Integer;
-  OnTime, OffTime, Intensity: integer;
-  StartString: string;
-begin
-  //
-  NeedClose := False;
-  ChannelOn := False;
-  Intensity := 0;
-  OldColor := clBlack;
-  OnTime := 0;
-
-  for I := 0 to LastFrame do
-    begin
-      ThisColor := SASequence[Y, X, I];
-
-
-      if ThisColor <> OldColor then  // Colors have changed
-        begin
-          if ChannelOn then
-            if Intensity > 0 then
-              begin
-                NeedClose := True;
-                OffTime := (TimeHack*I)+TimeHack;
-                ChannelOn := False;
-                // Forth Level
-                MainForm.MyMemo.Lines.Append(concat(tab(3),startstring,'" endCentisecond="',IntToStr(OffTime),'" intensity="',IntToStr(Intensity),'"/>'))
-              end;
-        end
-        else  // there is a color there
-            begin
-              OnTime := TimeHack*I;
-              ChannelOn := True;
-              StartString := concat('<effect type=intensity" startCentisecond="',IntTOStr(OnTime));
-              intensity := trunc((GetGValue(ThisColor)/255)*100);
-              OldColor := ThisColor;
-            end;
-
-
-    end; // end For loop (lastframe)
-    if NeedClose = True then MainForm.MyMemo.Lines.Append(concat(tab(2),'</channel>'));
-
-
-end; // end procedure GetBlue(Channel: integer);
+        end;
+    end;
+  if NeedClose then MainForm.MyMemo.Lines.Append(concat(tab(2), '</channel>'));
+end; // procedure GetRed(Channel: integer);
 
 
 {
- DO XML Channels
- Takes care of outputting the individual as well as the RGB channels
- to MainForm.MyMemo.Lines.
+*
+* GetGreen(Y,X)
+}
+procedure GetGreen(Y, X: integer);
+var
+  ChannelOn, NeedClose: Boolean;
+  OnTime, OffTime: integer;
+  Intensity, LastIntensity: integer;
+  Fr: Integer;
+  Green: Integer;
+  ES: string;
+begin
+  //
+  LastIntensity := 0;
+  Intensity := 0;
+  OnTime := 0;
+  OffTime := 0;
+
+  for Fr := 0 to LastFrame do
+    begin
+    Green := GetGValue(SASequence[Y, X, Fr]);
+    Intensity := Trunc((Green / 255)*100);
+    if Intensity > 0 then
+      begin
+        ChannelOn := True;
+        LastIntensity := Intensity;
+        OnTime := (TimeHack * Fr);
+        ES := concat(tab(3), '<effect type="intensity" startCentisecond="', IntToStr(OnTime));
+      end
+    else
+      if intensity <> lastintensity then
+        begin
+          ChannelOn := False;
+          OffTime := (TimeHack * Fr);
+          ES := concat(ES, '" endCentisecond="',IntToStr(OffTime),'" intensity="',IntToStr(LastIntensity),'"/>');
+          MainForm.MyMemo.Lines.Append(ES);
+          ES := '';
+          NeedClose := True;
+          if Intensity > 0 then
+            begin
+              ChannelOn := True;
+              OnTime := (TimeHack * Fr);
+              LastIntensity := Intensity;
+              ES := concat(tab(3), '<effect type="intensity" startCentisecond="', IntToStr(OnTime));
+            end;
+        end;
+    end;
+  if NeedClose then MainForm.MyMemo.Lines.Append(concat(tab(2), '</channel>'));
+end; // procedure GetGreen(Channel: integer);
+
+
+{
+*
+* GetBlue(Y,X)
+}
+procedure GetBlue(Y, X: integer);
+var
+  ChannelOn, NeedClose: Boolean;
+  OnTime, OffTime: integer;
+  Intensity, LastIntensity: integer;
+  Fr: Integer;
+  Blue: Integer;
+  ES: string;
+begin
+  //
+  LastIntensity := 0;
+  Intensity := 0;
+  OnTime := 0;
+  OffTime := 0;
+
+  for Fr := 0 to LastFrame do
+    begin
+    Blue := GetGValue(SASequence[Y, X, Fr]);
+    Intensity := Trunc((Blue / 255)*100);
+    if Intensity > 0 then
+      begin
+        ChannelOn := True;
+        LastIntensity := Intensity;
+        OnTime := (TimeHack * Fr);
+        ES := concat(tab(3), '<effect type="intensity" startCentisecond="', IntToStr(OnTime));
+      end
+    else
+      if intensity <> lastintensity then
+        begin
+          ChannelOn := False;
+          OffTime := (TimeHack * Fr);
+          ES := concat(ES, '" endCentisecond="',IntToStr(OffTime),'" intensity="',IntToStr(LastIntensity),'"/>');
+          MainForm.MyMemo.Lines.Append(ES);
+          ES := '';
+          NeedClose := True;
+          if Intensity > 0 then
+            begin
+              ChannelOn := True;
+              OnTime := (TimeHack * Fr);
+              LastIntensity := Intensity;
+              ES := concat(tab(3), '<effect type="intensity" startCentisecond="', IntToStr(OnTime));
+            end;
+        end;
+    end;
+  if NeedClose then MainForm.MyMemo.Lines.Append(concat(tab(2), '</channel>'));
+end; // procedure GetBlue(Channel: integer);
+
+
+{
+ *
+ * DO XML Channels
+ *
+ * Takes care of outputting the individual as well as the RGB channels
+ *to MainForm.MyMemo.Lines.
 }
 procedure DoXMLChannels;
 var
@@ -321,7 +339,7 @@ begin
 
 	Mainform.MyMemo.Lines.Append(Concat(tab(1),'</channels>'));
 	MainForm.MyMemo.Lines.Append(Concat(tab(1),'<timingGrids>'));
-	MainForm.MyMemo.Lines.Append(concat(tab(2),'<timingGrid saveID="0" name="Fixed Grid: ',IntToStr(TimeHack),'" type="fixed" spacing="10"/>'));
+	MainForm.MyMemo.Lines.Append(concat(tab(2),'<timingGrid saveID="0" name="Fixed Grid: ',IntToStr(TimeHack),'" type="fixed" spacing="',IntToStr(TimeHack),'"/>'));
 	MainForm.MyMemo.Lines.Append(concat(tab(1),'</timingGrids>'));
   // Second Level
 	MainForm.MyMemo.Lines.Append(concat(tab(1),'<tracks>'));

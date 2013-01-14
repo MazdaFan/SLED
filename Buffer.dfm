@@ -3,9 +3,11 @@ object BufferForm: TBufferForm
   Top = 0
   AutoSize = True
   Caption = 'Buffer'
-  ClientHeight = 25
-  ClientWidth = 104
+  ClientHeight = 162
+  ClientWidth = 249
   Color = clBtnFace
+  Constraints.MinHeight = 189
+  Constraints.MinWidth = 257
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -14,6 +16,7 @@ object BufferForm: TBufferForm
   FormStyle = fsStayOnTop
   OldCreateOrder = False
   Visible = True
+  OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 13
   object Shape1: TShape
