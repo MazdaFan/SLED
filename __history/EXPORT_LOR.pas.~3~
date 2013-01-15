@@ -66,11 +66,9 @@ end;
 procedure DoXMLHeader;
 begin
   With MainForm.MyMemo.Lines do
-    begin
     Append(concat('<?xml version="1.0" encoding="UTF-8" standalone="no"?>'));
     Append(concat('<sequence saveFileVersion="11" author="Smart LED" createdAt="', DateTimeToStr(Now) ,'">'));
     Append( concat(tab(1),'<channels>'));
-    end;
 end; // end of procedure DoXMLHeader;
 
 

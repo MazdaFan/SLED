@@ -4,12 +4,12 @@ uses
   Forms,
   MAIN in 'MAIN.PAS' {SDIAppForm},
   ABOUT in 'ABOUT.PAS' {AboutBox},
+  EXPORT_LOR in 'EXPORT_LOR.pas',
   FILE_IO in 'FILE_IO.pas',
   MATRIX in 'MATRIX.pas',
   SEQUENCE in 'SEQUENCE.pas',
   SETUP in 'SETUP.pas' {SetupForm},
   Buffer in 'Buffer.pas' {BufferForm},
-  EXPORT_LOR in 'EXPORT_LOR.pas',
   EXPORT_VIXEN in 'EXPORT_VIXEN.pas';
 
 {$R *.RES}

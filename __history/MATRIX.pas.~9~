@@ -171,6 +171,7 @@ begin
           LightMatrix[Y, X].Parent := MainForm;
       end;
     ArraySize := SizeOf(LightMatrix);
+    MainForm.Label2.Caption := IntToStr(ArraySize);
 end;
 
 

@@ -2,8 +2,8 @@ object SetupForm: TSetupForm
   Left = 0
   Top = 0
   Caption = 'Set Up Your Lights'
-  ClientHeight = 395
-  ClientWidth = 241
+  ClientHeight = 405
+  ClientWidth = 467
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

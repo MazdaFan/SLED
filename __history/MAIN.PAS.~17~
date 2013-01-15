@@ -51,7 +51,7 @@ interface
 
 uses Windows, Classes, Graphics, Forms, Controls, Menus,
   Dialogs, StdCtrls, Buttons, ExtCtrls, ComCtrls, ImgList, StdActns,
-  ActnList, ToolWin, Contnrs, SysUtils, MPlayer;
+  ActnList, ToolWin, Contnrs, SysUtils;
 
 type
   ShapeArray = array of array of TShape;
@@ -103,10 +103,6 @@ type
     SaveTemplate1: TMenuItem;
     EffStrings: TMemo;
     Button1: TButton;
-    MediaPlayer1: TMediaPlayer;
-    ProgressBar1: TProgressBar;
-    Timer1: TTimer;
-    Audio1: TMenuItem;
     procedure FileExit1Execute(Sender: TObject);
     procedure HelpAbout1Execute(Sender: TObject);
     procedure ColorBox1Change(Sender: TObject);
@@ -127,8 +123,6 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure Button1Click(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
-    procedure Audio1Click(Sender: TObject);
 
 
 
@@ -161,7 +155,7 @@ const
 
 implementation
 
-uses about, setup, MATRIX, SEQUENCE, File_IO, Buffer, EXPORT_LOR, EXPORT_VIXEN;
+uses about, setup, MATRIX, SEQUENCE, File_IO, Buffer, EXPORT_LOR;
 
 {$R *.dfm}
 
@@ -201,12 +195,6 @@ begin
   SaveSequence(SaveDialog.FileName);
 end;
 
-
-procedure TMainForm.Timer1Timer(Sender: TObject);
-begin
-  if ProgressBar1.Max <> 0 then
-    ProgressBar1.position := MediaPlayer1.Position;
-end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -321,19 +309,6 @@ end;
 procedure TMainForm.AsVixen1Click(Sender: TObject);
 begin
   //  Empty  Exports as Vixen
-end;
-
-procedure TMainForm.Audio1Click(Sender: TObject);
-begin
-  OpenDialog.Title := 'Open MP3 File';
-  if OpenDialog.Execute  then
-    begin
-    MediaPlayer1.Close;
-    MediaPlayer1.FileName := OpenDialog.FileName;
-    MediaPlayer1.Open;
-    ProgressBar1.Max := MediaPlayer1.Length;
-    end;
-
 end;
 
 procedure TMainForm.Button1Click(Sender: TObject);

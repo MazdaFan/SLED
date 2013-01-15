@@ -143,37 +143,6 @@ object MainForm: TMainForm
     WantTabs = True
     WordWrap = False
   end
-  object Button1: TButton
-    Left = 632
-    Top = 48
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
-    TabOrder = 5
-    OnClick = Button1Click
-  end
-  object MediaPlayer1: TMediaPlayer
-    Left = 192
-    Top = 0
-    Width = 141
-    Height = 30
-    ColoredButtons = [btPlay, btPause, btStop, btStep, btBack]
-    EnabledButtons = [btPlay, btPause, btStop, btStep, btBack]
-    VisibleButtons = [btPlay, btPause, btStop, btStep, btBack]
-    TabOrder = 6
-  end
-  object ProgressBar1: TProgressBar
-    Left = 8
-    Top = 594
-    Width = 970
-    Height = 17
-    DoubleBuffered = False
-    ParentDoubleBuffered = False
-    Smooth = True
-    Style = pbstMarquee
-    SmoothReverse = True
-    TabOrder = 7
-  end
   object MainMenu1: TMainMenu
     Images = ImageList1
     Left = 816
@@ -196,10 +165,6 @@ object MainForm: TMainForm
         object OpenTemplate1: TMenuItem
           Caption = 'Template'
           OnClick = OpenTemplate1Click
-        end
-        object Audio1: TMenuItem
-          Caption = 'Audio'
-          OnClick = Audio1Click
         end
       end
       object FileSaveItem: TMenuItem
@@ -337,7 +302,7 @@ object MainForm: TMainForm
     Left = 880
     Top = 592
     Bitmap = {
-      494C01010F003400500010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010F003400480010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -873,7 +838,7 @@ object MainForm: TMainForm
       000000000000}
   end
   object OpenDialog: TOpenDialog
-    Filter = 'All Files (*.*)|*.*|MP3 Files (*.mp3)|*.mp3'
+    Filter = 'All Files (*.*)|*.*'
     Title = 'Open SLED Sequence'
     Left = 912
     Top = 592
@@ -883,11 +848,6 @@ object MainForm: TMainForm
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
     Title = 'Save SLED Sequence'
     Left = 944
-    Top = 592
-  end
-  object Timer1: TTimer
-    OnTimer = Timer1Timer
-    Left = 776
     Top = 592
   end
 end

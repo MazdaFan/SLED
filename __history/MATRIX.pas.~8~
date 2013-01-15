@@ -148,7 +148,6 @@ procedure FillLightMatrix;
 var
   Y: Integer;
   X: Integer;
-  ArraySize: integer;
 begin
   //  Get rid of the old tshapes
   FreeLightMatrix;
@@ -170,7 +169,6 @@ begin
           LightMatrix[Y, X].OnMouseDown := EVHandler.MouseDown;
           LightMatrix[Y, X].Parent := MainForm;
       end;
-    ArraySize := SizeOf(LightMatrix);
 end;
 
 

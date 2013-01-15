@@ -50,7 +50,6 @@
 			<DCCReference Include="ABOUT.PAS">
 				<Form>AboutBox</Form>
 			</DCCReference>
-			<DCCReference Include="EXPORT_LOR.pas"/>
 			<DCCReference Include="FILE_IO.pas"/>
 			<DCCReference Include="MATRIX.pas"/>
 			<DCCReference Include="SEQUENCE.pas"/>
@@ -60,6 +59,7 @@
 			<DCCReference Include="Buffer.pas">
 				<Form>BufferForm</Form>
 			</DCCReference>
+			<DCCReference Include="EXPORT_LOR.pas"/>
 			<DCCReference Include="EXPORT_VIXEN.pas"/>
 			<None Include="ModelSupport_SLED\default.txaPackage"/>
 			<None Include="ModelSupport_SLED\default.txvpck"/>

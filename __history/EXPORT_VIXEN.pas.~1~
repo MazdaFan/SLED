@@ -52,7 +52,7 @@ With MainForm.MyMemo.Lines do
   begin
     Append(concat('<?xml version="1.0" encoding="utf-8"?>'));
     Append(concat('<Program>'));
-    Append(concat(tab(1),'<Time>',IntToStr(TimeHack*LastFrame),'</Time>'));
+    Append(concat(tab(1),'<Time>',IntToStr(),'</Time>'));
     Append(concat(tab(1),'<EventPeriodInMilliseconds>100</EventPeriodInMilliseconds>'));
     Append(concat(tab(1),'<MinimumLevel>0</MinimumLevel>'));
     Append(concat(tab(1),'<MaximumLevel>255</MaximumLevel>'));

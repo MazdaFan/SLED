@@ -9,7 +9,6 @@ uses
   SEQUENCE in 'SEQUENCE.pas',
   SETUP in 'SETUP.pas' {SetupForm},
   Buffer in 'Buffer.pas' {BufferForm},
-  EXPORT_LOR in 'EXPORT_LOR.pas',
   EXPORT_VIXEN in 'EXPORT_VIXEN.pas';
 
 {$R *.RES}
