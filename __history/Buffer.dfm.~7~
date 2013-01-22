@@ -6,8 +6,8 @@ object BufferForm: TBufferForm
   ClientHeight = 151
   ClientWidth = 241
   Color = clBtnFace
-  Constraints.MinHeight = 178
-  Constraints.MinWidth = 249
+  Constraints.MinHeight = 189
+  Constraints.MinWidth = 257
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -16,6 +16,7 @@ object BufferForm: TBufferForm
   FormStyle = fsStayOnTop
   KeyPreview = True
   OldCreateOrder = False
+  Visible = True
   OnKeyDown = FormKeyDown
   OnMouseDown = FormMouseDown
   OnMouseMove = FormMouseMove

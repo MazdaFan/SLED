@@ -1,0 +1,8 @@
+{TODO 5 -oJamie -cApplication : Add GPL licensing}
+{TODO 5 -oJamie -cGUI : dockable painting tools pallete}
+{TODO 3 -oJamie -cApplication : Add template function for saving matrix setups}
+{TODO 4 -oJamie -cXML : Save application settings to an XML document for later reading}
+{TODO 2 -oJamie -cXML : Implement true XML handling}
+{TODO 5 -oJamie -cXML : Add an export function for Lightshow Pro sequencing software}
+{TODO 5 -oJamie -cXML : Add an export function for Vixen sequencing software}
+{TODO 1 -oJamie -cGraphics : Add GDI functions to speed up animation for playback}

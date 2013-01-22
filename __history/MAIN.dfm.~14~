@@ -735,9 +735,4 @@ object MainForm: TMainForm
       8001800FF0010000F81F801FFC01800100000000000000000000000000000000
       000000000000}
   end
-  object ActionList1: TActionList
-    Images = ImageList1
-    Left = 608
-    Top = 504
-  end
 end

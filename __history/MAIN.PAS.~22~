@@ -100,7 +100,6 @@ type
     ToolButton4: TToolButton;
     ToolButton5: TToolButton;
     ToolButton6: TToolButton;
-    ActionList1: TActionList;
     procedure FileExit1Execute(Sender: TObject);
     procedure HelpAbout1Execute(Sender: TObject);
     procedure FormCreate(Sender: TObject);

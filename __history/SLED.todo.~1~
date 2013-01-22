@@ -1,0 +1,5 @@
+{TODO 2 -oJamie -cXML : Save application settings to an XML document for later reading}
+{TODO 2 -oJamie -cXML : Implement try XML handling}
+{TODO 3 -oJamie -cXML : Add an export function for Lightshow Pro sequencing software}
+{TODO 3 -oJamie -cXML : Add an export function for Vixen sequencing software}
+{TODO 1 -oJamie -cGraphics : Add GDI functions to speed up animation for playback}

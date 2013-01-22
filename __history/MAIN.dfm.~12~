@@ -1,0 +1,295 @@
+object MainForm: TMainForm
+  Left = 197
+  Top = 111
+  HelpType = htKeyword
+  HelpKeyword = 'MainForm'
+  AutoSize = True
+  Caption = 'Smart LED Animator'
+  ClientHeight = 554
+  ClientWidth = 994
+  Color = clBtnFace
+  Constraints.MinHeight = 600
+  Constraints.MinWidth = 640
+  DoubleBuffered = True
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -13
+  Font.Name = 'System'
+  Font.Style = []
+  HelpFile = 'SLED.chm'
+  Menu = MainMenu1
+  OldCreateOrder = False
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  OnMouseDown = FormMouseDown
+  OnMouseMove = FormMouseMove
+  OnMouseUp = FormMouseUp
+  PixelsPerInch = 96
+  TextHeight = 16
+  object Label1: TLabel
+    Left = 760
+    Top = 328
+    Width = 45
+    Height = 16
+    AutoSize = False
+    Caption = 'Frame:'
+  end
+  object Label2: TLabel
+    Left = 811
+    Top = 328
+    Width = 8
+    Height = 16
+    AutoSize = False
+    Caption = '0'
+  end
+  object Label3: TLabel
+    Left = 811
+    Top = 350
+    Width = 48
+    Height = 16
+    AutoSize = False
+    Caption = '0:00.00'
+  end
+  object StatusBar: TStatusBar
+    Left = 0
+    Top = 535
+    Width = 994
+    Height = 19
+    Margins.Left = 2
+    Margins.Top = 2
+    Margins.Right = 2
+    Margins.Bottom = 2
+    AutoHint = True
+    Panels = <>
+    SimplePanel = True
+    ExplicitTop = 463
+  end
+  object MyMemo: TMemo
+    Left = 17
+    Top = 419
+    Width = 17
+    Height = 16
+    ParentCustomHint = False
+    TabStop = False
+    BevelEdges = []
+    BevelInner = bvNone
+    BevelOuter = bvNone
+    BorderStyle = bsNone
+    Ctl3D = True
+    DoubleBuffered = True
+    Lines.Strings = (
+      '')
+    ParentCtl3D = False
+    ParentDoubleBuffered = False
+    ParentShowHint = False
+    ShowHint = False
+    TabOrder = 1
+    Visible = False
+    WantReturns = False
+    WantTabs = True
+    WordWrap = False
+  end
+  object EffStrings: TMemo
+    Left = 56
+    Top = 419
+    Width = 17
+    Height = 16
+    ParentCustomHint = False
+    TabStop = False
+    BevelEdges = []
+    BevelInner = bvNone
+    BevelOuter = bvNone
+    BorderStyle = bsNone
+    Ctl3D = True
+    DoubleBuffered = True
+    Lines.Strings = (
+      '')
+    ParentCtl3D = False
+    ParentDoubleBuffered = False
+    ParentShowHint = False
+    ShowHint = False
+    TabOrder = 2
+    Visible = False
+    WantReturns = False
+    WantTabs = True
+    WordWrap = False
+  end
+  object MediaPlayer1: TMediaPlayer
+    Left = 280
+    Top = 195
+    Width = 141
+    Height = 30
+    ColoredButtons = [btPlay, btPause, btStop, btStep, btBack]
+    EnabledButtons = [btPlay, btPause, btStop, btStep, btBack]
+    VisibleButtons = [btPlay, btPause, btStop, btStep, btBack]
+    TabOrder = 3
+  end
+  object ProgressBar1: TProgressBar
+    Left = 0
+    Top = 513
+    Width = 994
+    Height = 17
+    DoubleBuffered = False
+    ParentDoubleBuffered = False
+    Smooth = True
+    Style = pbstMarquee
+    SmoothReverse = True
+    TabOrder = 4
+  end
+  object StaticText1: TStaticText
+    Left = 765
+    Top = 350
+    Width = 40
+    Height = 20
+    AutoSize = False
+    Caption = 'Time:'
+    TabOrder = 5
+  end
+  object ToolBar1: TToolBar
+    Left = 0
+    Top = 0
+    Width = 994
+    Height = 29
+    Caption = 'ToolBar1'
+    TabOrder = 6
+    ExplicitLeft = 200
+    ExplicitTop = 24
+    ExplicitWidth = 150
+    object ToolButton1: TToolButton
+      Left = 0
+      Top = 0
+      Caption = 'ToolButton1'
+      ImageIndex = 0
+    end
+  end
+  object MainMenu1: TMainMenu
+    Left = 776
+    Top = 520
+    object File1: TMenuItem
+      Caption = '&File'
+      Hint = 'File related commands'
+      object New1: TMenuItem
+        Caption = 'New'
+        OnClick = New1Click
+      end
+      object FileNewItem: TMenuItem
+        Caption = 'Open'
+        Hint = 'Open|Open a file'
+        ImageIndex = 7
+        object OpenSequence1: TMenuItem
+          Caption = 'Sequence'
+          OnClick = OpenSequence1Click
+        end
+        object OpenTemplate1: TMenuItem
+          Caption = 'Template'
+          OnClick = OpenTemplate1Click
+        end
+        object Audio1: TMenuItem
+          Caption = 'Audio'
+          OnClick = Audio1Click
+        end
+      end
+      object FileSaveItem: TMenuItem
+        Caption = '&Save'
+        Hint = 'Save|Save current file'
+        ImageIndex = 8
+        object SaveSequence1: TMenuItem
+          Caption = 'Sequence'
+          OnClick = SaveSequence1Click
+        end
+        object SaveTemplate1: TMenuItem
+          Caption = 'Template'
+        end
+      end
+      object FileSaveAsItem1: TMenuItem
+        Caption = 'Save As...'
+        Hint = 'Save As|Save current file with different name'
+      end
+      object Play1: TMenuItem
+        Caption = 'Play'
+        OnClick = Play1Click
+      end
+      object ExportSequence1: TMenuItem
+        Caption = 'Export Sequence'
+        object AsLORS31: TMenuItem
+          Caption = 'As LOR S3'
+          OnClick = AsLORS31Click
+        end
+        object AsVixen1: TMenuItem
+          Caption = 'As Vixen'
+          Enabled = False
+          OnClick = AsVixen1Click
+        end
+        object AsLSP1: TMenuItem
+          Caption = 'As LSP'
+          Enabled = False
+          OnClick = AsLSP1Click
+        end
+      end
+      object N1: TMenuItem
+        Caption = '-'
+      end
+      object FileExitItem: TMenuItem
+        Caption = 'E&xit'
+        Hint = 'Exit|Exit application'
+        OnClick = FileExit1Execute
+      end
+    end
+    object Edit1: TMenuItem
+      Caption = '&Edit'
+      Hint = 'Edit commands'
+      object CutItem: TMenuItem
+        Caption = 'Cu&t'
+        Hint = 'Cut|Cuts the selection and puts it on the Clipboard'
+        ImageIndex = 0
+        ShortCut = 16472
+      end
+      object CopyItem: TMenuItem
+        Caption = '&Copy'
+        Hint = 'Copy|Copies the selection and puts it on the Clipboard'
+        ImageIndex = 1
+        ShortCut = 16451
+      end
+      object PasteItem: TMenuItem
+        Caption = '&Paste'
+        Hint = 'Paste|Inserts Clipboard contents'
+        ImageIndex = 2
+        ShortCut = 16470
+      end
+    end
+    object Help1: TMenuItem
+      Caption = '&Help'
+      Hint = 'Help topics'
+      object HelpAboutItem: TMenuItem
+        Caption = '&About...'
+        Hint = 
+          'About|Displays program information, version number, and copyrigh' +
+          't'
+        OnClick = HelpAbout1Execute
+      end
+    end
+  end
+  object OpenDialog: TOpenDialog
+    Filter = 'All Files (*.*)|*.*|MP3 Files (*.mp3)|*.mp3'
+    Title = 'Open SLED Sequence'
+    Left = 832
+    Top = 520
+  end
+  object SaveDialog: TSaveDialog
+    Filter = 'SLED Files (*.sas)|*.sas|All Files (*.*)|*.*'
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
+    Title = 'Save SLED Sequence'
+    Left = 896
+    Top = 520
+  end
+  object Timer1: TTimer
+    OnTimer = Timer1Timer
+    Left = 720
+    Top = 520
+  end
+  object ImageList1: TImageList
+    Left = 664
+    Top = 504
+  end
+end

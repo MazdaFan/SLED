@@ -20,7 +20,9 @@ object MainForm: TMainForm
   OnClose = FormClose
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
-  OnMouseEnter = FormMouseEnter
+  OnMouseDown = FormMouseDown
+  OnMouseMove = FormMouseMove
+  OnMouseUp = FormMouseUp
   PixelsPerInch = 96
   TextHeight = 16
   object Label1: TLabel
@@ -37,18 +39,12 @@ object MainForm: TMainForm
     Height = 16
     Caption = '0'
   end
-  object StatusBar: TStatusBar
-    Left = 0
-    Top = 624
-    Width = 986
-    Height = 19
-    Margins.Left = 2
-    Margins.Top = 2
-    Margins.Right = 2
-    Margins.Bottom = 2
-    AutoHint = True
-    Panels = <>
-    SimplePanel = True
+  object Label3: TLabel
+    Left = 875
+    Top = 70
+    Width = 48
+    Height = 16
+    Caption = '0:00.00'
   end
   object ToolBar1: TToolBar
     Left = 0
@@ -67,18 +63,48 @@ object MainForm: TMainForm
     object ToolButton9: TToolButton
       Left = 5
       Top = 0
-      Action = FileNew1
+      Hint = 'New|New File'
+      Caption = 'Open'
+      ImageIndex = 6
+      MenuItem = FileNewItem
     end
     object ToolButton1: TToolButton
       Left = 28
       Top = 0
-      Action = FileOpen1
+      Hint = 'Open|Open Sequence'
+      Caption = 'Sequence'
+      ImageIndex = 7
+      MenuItem = OpenSequence1
     end
     object ToolButton2: TToolButton
       Left = 51
       Top = 0
-      Action = FileSave1
+      Hint = 'Save|Save current file'
+      Caption = '&Save'
+      ImageIndex = 8
+      MenuItem = FileSaveItem
     end
+    object ToolButton3: TToolButton
+      Left = 74
+      Top = 0
+      Width = 8
+      Caption = 'ToolButton3'
+      ImageIndex = 9
+      Style = tbsSeparator
+    end
+  end
+  object StatusBar: TStatusBar
+    Left = 0
+    Top = 624
+    Width = 986
+    Height = 19
+    Margins.Left = 2
+    Margins.Top = 2
+    Margins.Right = 2
+    Margins.Bottom = 2
+    AutoHint = True
+    Panels = <>
+    SimplePanel = True
   end
   object ColorBox1: TColorBox
     Left = 824
@@ -112,8 +138,64 @@ object MainForm: TMainForm
     ShowHint = False
     TabOrder = 3
     Visible = False
+    WantReturns = False
     WantTabs = True
     WordWrap = False
+  end
+  object EffStrings: TMemo
+    Left = 176
+    Top = 595
+    Width = 17
+    Height = 16
+    ParentCustomHint = False
+    TabStop = False
+    BevelEdges = []
+    BevelInner = bvNone
+    BevelOuter = bvNone
+    BorderStyle = bsNone
+    Ctl3D = True
+    DoubleBuffered = True
+    Lines.Strings = (
+      '')
+    ParentCtl3D = False
+    ParentDoubleBuffered = False
+    ParentShowHint = False
+    ShowHint = False
+    TabOrder = 4
+    Visible = False
+    WantReturns = False
+    WantTabs = True
+    WordWrap = False
+  end
+  object MediaPlayer1: TMediaPlayer
+    Left = 240
+    Top = 0
+    Width = 141
+    Height = 22
+    ColoredButtons = [btPlay, btPause, btStop, btStep, btBack]
+    EnabledButtons = [btPlay, btPause, btStop, btStep, btBack]
+    VisibleButtons = [btPlay, btPause, btStop, btStep, btBack]
+    TabOrder = 5
+  end
+  object ProgressBar1: TProgressBar
+    Left = 8
+    Top = 594
+    Width = 970
+    Height = 17
+    DoubleBuffered = False
+    ParentDoubleBuffered = False
+    Smooth = True
+    Style = pbstMarquee
+    SmoothReverse = True
+    TabOrder = 6
+  end
+  object StaticText1: TStaticText
+    Left = 829
+    Top = 70
+    Width = 40
+    Height = 20
+    Caption = 'Time:'
+    TabOrder = 7
   end
   object MainMenu1: TMainMenu
     Images = ImageList1
@@ -122,25 +204,63 @@ object MainForm: TMainForm
     object File1: TMenuItem
       Caption = '&File'
       Hint = 'File related commands'
-      object FileNewItem: TMenuItem
-        Action = FileNew1
+      object New1: TMenuItem
+        Caption = 'New'
+        OnClick = New1Click
       end
-      object FileOpenItem: TMenuItem
-        Action = FileOpen1
+      object FileNewItem: TMenuItem
+        Caption = 'Open'
+        Hint = 'Open|Open a file'
+        ImageIndex = 7
+        object OpenSequence1: TMenuItem
+          Caption = 'Sequence'
+          OnClick = OpenSequence1Click
+        end
+        object OpenTemplate1: TMenuItem
+          Caption = 'Template'
+          OnClick = OpenTemplate1Click
+        end
+        object Audio1: TMenuItem
+          Caption = 'Audio'
+          OnClick = Audio1Click
+        end
       end
       object FileSaveItem: TMenuItem
-        Action = FileSave1
+        Caption = '&Save'
+        Hint = 'Save|Save current file'
+        ImageIndex = 8
+        object SaveSequence1: TMenuItem
+          Caption = 'Sequence'
+          OnClick = SaveSequence1Click
+        end
+        object SaveTemplate1: TMenuItem
+          Caption = 'Template'
+        end
       end
-      object FileSaveAsItem: TMenuItem
-        Action = FileSaveAs1
+      object FileSaveAsItem1: TMenuItem
+        Caption = 'Save As...'
+        Hint = 'Save As|Save current file with different name'
       end
-      object Pla1: TMenuItem
+      object Play1: TMenuItem
         Caption = 'Play'
-        OnClick = Pla1Click
+        OnClick = Play1Click
       end
-      object DisplaySequence1: TMenuItem
+      object ExportSequence1: TMenuItem
         Caption = 'Export Sequence'
-        OnClick = DisplaySequence1Click
+        object AsLORS31: TMenuItem
+          Caption = 'As LOR S3'
+          OnClick = AsLORS31Click
+        end
+        object AsVixen1: TMenuItem
+          Caption = 'As Vixen'
+          Enabled = False
+          OnClick = AsVixen1Click
+        end
+        object AsLSP1: TMenuItem
+          Caption = 'As LSP'
+          Enabled = False
+          OnClick = AsLSP1Click
+        end
       end
       object N1: TMenuItem
         Caption = '-'
@@ -180,7 +300,6 @@ object MainForm: TMainForm
       Hint = 'New|Create a new file'
       ImageIndex = 6
       ShortCut = 16462
-      OnExecute = FileNew1Execute
     end
     object FileOpen1: TAction
       Category = 'File'
@@ -188,7 +307,6 @@ object MainForm: TMainForm
       Hint = 'Open|Open a file'
       ImageIndex = 7
       ShortCut = 16463
-      OnExecute = FileOpen1Execute
     end
     object FileSave1: TAction
       Category = 'File'
@@ -196,13 +314,11 @@ object MainForm: TMainForm
       Hint = 'Save|Save current file'
       ImageIndex = 8
       ShortCut = 16467
-      OnExecute = FileSave1Execute
     end
     object FileSaveAs1: TAction
       Category = 'File'
       Caption = 'Save &As...'
       Hint = 'Save As|Save current file with different name'
-      OnExecute = FileSave1Execute
     end
     object FileExit1: TAction
       Category = 'File'
@@ -244,7 +360,7 @@ object MainForm: TMainForm
     Left = 880
     Top = 592
     Bitmap = {
-      494C01010F002800280010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010F005000500010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -780,13 +896,21 @@ object MainForm: TMainForm
       000000000000}
   end
   object OpenDialog: TOpenDialog
-    Filter = 'All Files (*.*)|*.*'
+    Filter = 'All Files (*.*)|*.*|MP3 Files (*.mp3)|*.mp3'
+    Title = 'Open SLED Sequence'
     Left = 912
     Top = 592
   end
   object SaveDialog: TSaveDialog
-    Filter = 'All Files (*.*)|*.*'
+    Filter = 'SLED Files (*.sas)|*.sas|All Files (*.*)|*.*'
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
+    Title = 'Save SLED Sequence'
     Left = 944
+    Top = 592
+  end
+  object Timer1: TTimer
+    OnTimer = Timer1Timer
+    Left = 776
     Top = 592
   end
 end

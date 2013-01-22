@@ -93,7 +93,7 @@ begin
   Sequence.CreateTrack;
   SetupForm.Visible := False;
   if CustomTime then TimeHack := Trunc((StrToFloat(Edit1.Text)*100));
-  MainForm.Timer1.Interval := TimeHack * 10;
+
 end;
 
 procedure TSetupForm.RadioGroup1Click(Sender: TObject);

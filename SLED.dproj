@@ -73,6 +73,7 @@
 			<None Include="ModelSupport_SLED\SETUP\default.txvpck"/>
 			<None Include="ModelSupport_SLED\ABOUT\default.txaPackage"/>
 			<None Include="ModelSupport_SLED\MAIN\default.txaPackage"/>
+			<None Include="SLED.todo"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

@@ -51,7 +51,7 @@ interface
 
 uses Windows, Classes, Graphics, Forms, Controls, Menus,
   Dialogs, StdCtrls, Buttons, ExtCtrls, ComCtrls, ImgList, StdActns,
-  ActnList, ToolWin, Contnrs, SysUtils;
+  ActnList, ToolWin, Contnrs, SysUtils, MPlayer;
 
 type
   ShapeArray = array of array of TShape;
@@ -77,9 +77,8 @@ type
     MainMenu1: TMainMenu;
     File1: TMenuItem;
     FileNewItem: TMenuItem;
-    FileOpenItem: TMenuItem;
     FileSaveItem: TMenuItem;
-    FileSaveAsItem: TMenuItem;
+    FileSaveAsItem1: TMenuItem;
     N1: TMenuItem;
     FileExitItem: TMenuItem;
     Edit1: TMenuItem;
@@ -89,29 +88,50 @@ type
     Help1: TMenuItem;
     HelpAboutItem: TMenuItem;
     ColorBox1: TColorBox;
-    Pla1: TMenuItem;
-    DisplaySequence1: TMenuItem;
+    Play1: TMenuItem;
+    ExportSequence1: TMenuItem;
     Label1: TLabel;
     Label2: TLabel;
     MyMemo: TMemo;
     AsLORS31: TMenuItem;
     AsVixen1: TMenuItem;
     AsLSP1: TMenuItem;
-    procedure FileNew1Execute(Sender: TObject);
+    New1: TMenuItem;
+    OpenSequence1: TMenuItem;
+    OpenTemplate1: TMenuItem;
+    SaveSequence1: TMenuItem;
+    SaveTemplate1: TMenuItem;
+    EffStrings: TMemo;
+    MediaPlayer1: TMediaPlayer;
+    ProgressBar1: TProgressBar;
+    Timer1: TTimer;
+    Audio1: TMenuItem;
+    StaticText1: TStaticText;
+    Label3: TLabel;
+    ToolButton3: TToolButton;
     procedure FileExit1Execute(Sender: TObject);
     procedure HelpAbout1Execute(Sender: TObject);
     procedure ColorBox1Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure Pla1Click(Sender: TObject);
+    procedure Play1Click(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure Sequence2Click(Sender: TObject);
-    procedure emplate2Click(Sender: TObject);
-    procedure Sequence1Click(Sender: TObject);
-    procedure emplate1Click(Sender: TObject);
     procedure AsLORS31Click(Sender: TObject);
     procedure AsVixen1Click(Sender: TObject);
     procedure AsLSP1Click(Sender: TObject);
+    procedure OpenSequence1Click(Sender: TObject);
+    procedure OpenTemplate1Click(Sender: TObject);
+    procedure New1Click(Sender: TObject);
+    procedure SaveSequence1Click(Sender: TObject);
+    procedure FormMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure FormMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure Button1Click(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure Audio1Click(Sender: TObject);
+
 
 
   private
@@ -143,30 +163,37 @@ const
 
 implementation
 
-uses about, setup, MATRIX, SEQUENCE, File_IO, EXPORT_XML, Buffer;
+uses about, setup, MATRIX, SEQUENCE, File_IO, Buffer, EXPORT_LOR, EXPORT_VIXEN;
 
 {$R *.dfm}
 
-
-
-
-procedure TMainForm.emplate1Click(Sender: TObject);
+function MemoryUsed: cardinal;
+var
+    st: TMemoryManagerState;
+    sb: TSmallBlockTypeState;
 begin
-  // Empty Save Template
+    GetMemoryManagerState(st);
+    result := st.TotalAllocatedMediumBlockSize + st.TotalAllocatedLargeBlockSize;
+    for sb in st.SmallBlockTypeStates do begin
+        result := result + sb.UseableBlockSize * sb.AllocatedBlockCount;
+    end;
 end;
 
-procedure TMainForm.emplate2Click(Sender: TObject);
-begin
-  // Empty  Open Template
-end;
 
-procedure TMainForm.Pla1Click(Sender: TObject);
+
+
+
+procedure TMainForm.Play1Click(Sender: TObject);
 begin
   PlaySequence;
 end;
 
-
-procedure TMainForm.Sequence1Click(Sender: TObject);
+{
+*
+* SAVE A SEQUENCE FILE
+*
+}
+procedure TMainForm.SaveSequence1Click(Sender: TObject);
 begin
   SaveDialog.DefaultExt := '.sas';
   SaveDialog.Filter := 'SLED Files (*.sas)|*.sas|All Files (*.*)|*.*';
@@ -176,25 +203,11 @@ begin
   SaveSequence(SaveDialog.FileName);
 end;
 
-procedure TMainForm.Sequence2Click(Sender: TObject);
-begin
-  OpenDialog.DefaultExt := '.sas';
-  OpenDialog.Title := 'Open SLED Sequence';
-  OpenDialog.Filter := 'SLED Files (*.sas)|*.sas|All Files (*.*)|*.*';
-  OpenDialog.InitialDir := './Sequences/';
-  // If OK or Return was selected from the Open Dialog, the load the filename.
-  if OpenDialog.Execute then
-  LoadSequence(OpenDialog.FileName);
-end;
 
-procedure TMainForm.FileNew1Execute(Sender: TObject);
+procedure TMainForm.Timer1Timer(Sender: TObject);
 begin
-  //Get rid of any shapes on the form, then set then initialize the arrays.
-  FreeLightMatrix;
-  SetLength(LightMatrix,0, 0);
-  SetLength(SASequence,0,0,0);
-  // Make our sub form visible
-  Setup.SetupForm.Visible := True;
+  if ProgressBar1.Max <> 0 then
+    ProgressBar1.position := MediaPlayer1.Position;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -212,34 +225,85 @@ begin
   TimeHack := 50;    // default to catch files that do not have a timehack assigned.
   // Set up our dynamic array with a length of 0
   SetLength(LightMatrix,0, 0);
+  Label2.Caption := IntToStr(MemoryUsed);
 end;
 
 procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   // Catch keystrokes and manipulate the matrix
-  case Key of
-    VK_NUMPAD0: PlaySequence;
-    VK_NUMPAD1: begin CaptureFrame; ShiftDown; ShiftLeft; end;
-    VK_NUMPAD2: begin CaptureFrame; ShiftDown; end;
-    VK_NUMPAD3: begin CaptureFrame; ShiftDown; ShiftRight; end;
-    VK_NUMPAD4: begin CaptureFrame; ShiftLeft; end;
-    VK_NUMPAD5: CaptureFrame;
-    VK_NUMPAD6: begin CaptureFrame; ShiftRight; end;
-    VK_NUMPAD7: begin CaptureFrame; ShiftUp; ShiftLeft; end;
-    VK_NUMPAD8: begin CaptureFrame; ShiftUp; end;
-    VK_NUMPAD9: begin CaptureFrame; ShiftUp; ShiftRight; end;
-    VK_RETURN:;
-    VK_SUBTRACT:; // begin CaptureFrame; SplitHorizontally; end;
-    VK_ADD:; // begin CaptureFrame; SplitHorizontally; SplitVertically; end;
-    VK_LEFT: BackupFrame;
-    VK_RIGHT: ForwardFrame;
-    VK_DIVIDE:;  // begin CaptureFrame; SplitVertically; end;
-    VK_INSERT: InsertFrame;
-    VK_DELETE: DeleteFrame;
-    VK_F11:; //CloseBuffer;
-    VK_F12:; //OpenBuffer;
+  if ssShift in Shift then     // Catch Shifted Keystrokes
+    begin
+      //
+    end
+  else
+  if ssAlt in Shift then       // Catch Alt Keypresses
+    begin
+       //
+    end
+  else if ssCtrl in Shift then   // Catch Ctrl Keypresses
+       begin
+        case Key of
+          VK_NUMPAD1: begin ShiftDown; ShiftLeft; end;
+          VK_NUMPAD2: begin ShiftDown; end;
+          VK_NUMPAD3: begin ShiftDown; ShiftRight; end;
+          VK_NUMPAD4: begin ShiftLeft; end;
+          VK_NUMPAD5: begin SwapBuffer; end;
+          VK_NUMPAD6: begin ShiftRight; end;
+          VK_NUMPAD7: begin ShiftUp; ShiftLeft; end;
+          VK_NUMPAD8: begin ShiftUp; end;
+          VK_NUMPAD9: begin ShiftUp; ShiftRight; end;
+        end;
+       end
+  else                        // No Modifier
+    begin
+      case Key of
+        VK_NUMPAD0: PlaySequence;
+        VK_NUMPAD1: begin CaptureFrame; ShiftDown; ShiftLeft; end;
+        VK_NUMPAD2: begin CaptureFrame; ShiftDown; end;
+        VK_NUMPAD3: begin CaptureFrame; ShiftDown; ShiftRight; end;
+        VK_NUMPAD4: begin CaptureFrame; ShiftLeft; end;
+        VK_NUMPAD5: begin CaptureFrame; SwapBuffer; end;
+        VK_NUMPAD6: begin CaptureFrame; ShiftRight; end;
+        VK_NUMPAD7: begin CaptureFrame; ShiftUp; ShiftLeft; end;
+        VK_NUMPAD8: begin CaptureFrame; ShiftUp; end;
+        VK_NUMPAD9: begin CaptureFrame; ShiftUp; ShiftRight; end;
+        VK_RETURN: CaptureFrame;
+        VK_SUBTRACT:; // begin CaptureFrame; SplitHorizontally; end;
+        VK_ADD:; // begin CaptureFrame; SplitHorizontally; SplitVertically; end;
+        VK_LEFT: BackupFrame;
+        VK_RIGHT: ForwardFrame;
+        VK_DIVIDE:;  // begin CaptureFrame; SplitVertically; end;
+        VK_INSERT: InsertFrame;
+        VK_DELETE: DeleteFrame;
+        VK_F11:; //CloseBuffer;
+        VK_F12: if BufferForm.Visible then BufferForm.Visible := False else BufferForm.Visible := True;
+    end;
+
   end;
+end;
+
+procedure TMainForm.FormMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  MouseDrag := True;
+  SetCapture(MainForm.Handle);
+end;
+
+procedure TMainForm.FormMouseMove(Sender: TObject; Shift: TShiftState; X,
+  Y: Integer);
+begin
+  if Dragging then    // Put capture code here for dragging the mouse
+    begin
+
+    end;
+end;
+
+procedure TMainForm.FormMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  MouseDrag := False;
+  ReleaseCapture;
 end;
 
 procedure TMainForm.AsLORS31Click(Sender: TObject);
@@ -248,7 +312,7 @@ begin
   SaveDialog.Title := 'Export Sequence';
   SaveDialog.Filter := 'LOR Sequence (.las)|*.las|Vixen Sequence (.vix)|*.vix';
   if SaveDialog.Execute  then
-      Export_XML.CreateXMLDoc(SaveDialog.FileName );
+//      Export_LOR.CreateXMLDoc(SaveDialog.FileName );
 end;
 
 procedure TMainForm.AsLSP1Click(Sender: TObject);
@@ -259,6 +323,24 @@ end;
 procedure TMainForm.AsVixen1Click(Sender: TObject);
 begin
   //  Empty  Exports as Vixen
+end;
+
+procedure TMainForm.Audio1Click(Sender: TObject);
+begin
+  OpenDialog.Title := 'Open MP3 File';
+  if OpenDialog.Execute  then
+    begin
+    MediaPlayer1.Close;
+    MediaPlayer1.FileName := OpenDialog.FileName;
+    MediaPlayer1.Open;
+    ProgressBar1.Max := MediaPlayer1.Length;
+    end;
+
+end;
+
+procedure TMainForm.Button1Click(Sender: TObject);
+begin
+  Label2.Caption := IntToStr(SizeOf(LightMatrix[0,0]));
 end;
 
 procedure TMainForm.ColorBox1Change(Sender: TObject);
@@ -278,6 +360,62 @@ begin
   About.AboutBox.ShowModal;
 end;
 
+{
+*
+*  CREATE A NEW SEQUENCE
+*
+}
+procedure TMainForm.New1Click(Sender: TObject);
+begin
+  //Get rid of any shapes on the form, then set then initialize the arrays.
+  FreeLightMatrix;
+  SetLength(LightMatrix,0, 0);
+  SetLength(SASequence,0,0,0);
+  // Make our sub form visible
+  Setup.SetupForm.Visible := True;
+end;
 
+{
+*
+*  OPEN SEQUENCE FILE
+*
+}
+procedure TMainForm.OpenSequence1Click(Sender: TObject);
+begin
+  OpenDialog.DefaultExt := '.sas';
+  OpenDialog.Title := 'Open SLED Sequence';
+  OpenDialog.Filter := 'SLED Files (*.sas)|*.sas|All Files (*.*)|*.*';
+  OpenDialog.InitialDir := './Sequences/';
+  // If OK or Return was selected from the Open Dialog, the load the filename.
+  if OpenDialog.Execute then
+  LoadSequence(OpenDialog.FileName);
+end;
+
+{
+*
+*  Open a Template File
+*
+}
+
+procedure TMainForm.OpenTemplate1Click(Sender: TObject);
+begin
+//
+end;
+
+procedure CodeVault;
+begin
+{ // Save Dialog
+
+}
+
+{  New Sequence
+
+}
+
+{ // Open Sequence
+
+}
+
+end;
 
 end.
