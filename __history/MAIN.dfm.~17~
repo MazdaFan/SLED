@@ -52,10 +52,11 @@ object MainForm: TMainForm
     Caption = '0:00.00'
   end
   object MyImage: TImage
-    Left = 61
-    Top = 296
+    Left = 874
+    Top = 384
     Width = 105
     Height = 105
+    Visible = False
   end
   object StatusBar: TStatusBar
     Left = 0

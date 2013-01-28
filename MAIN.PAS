@@ -101,6 +101,9 @@ type
     ToolButton5: TToolButton;
     ToolButton6: TToolButton;
     ActionList1: TActionList;
+    ilBitMaps: TImageList;
+    ColorDialog1: TColorDialog;
+    MyImage: TImage;
     procedure FileExit1Execute(Sender: TObject);
     procedure HelpAbout1Execute(Sender: TObject);
     procedure FormCreate(Sender: TObject);

@@ -10,21 +10,12 @@ type
   TBufferForm = class(TForm)
     ColorDialog1: TColorDialog;
     Shape1: TShape;
-    Shape2: TShape;
-    Shape3: TShape;
-    Shape4: TShape;
-    Shape5: TShape;
-    Shape6: TShape;
-    Shape7: TShape;
-    Shape8: TShape;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure FormMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure Shape1MouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
   end;
 procedure CreateBuffer;
 procedure FillBufferMatrix;
@@ -228,28 +219,6 @@ procedure TBufferForm.FormMouseUp(Sender: TObject; Button: TMouseButton;
 begin
   MouseDrag := False;
   ReleaseCapture;
-end;
-
-
-
-procedure TBufferForm.Shape1MouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-begin
-  if Sender is TShape then
-    with Sender as TShape do
-      begin
-        if Button = mbLeft then
-          CurrentColor := Brush.Color;
-        if Button = mbRight then
-          begin
-            //
-            if MainForm.ColorDialog1.Execute then
-              begin
-                Brush.Color := MainForm.ColorDialog1.Color;
-                CurrentColor := Brush.Color;
-              end;
-          end;
-      end;
 end;
 
 end.

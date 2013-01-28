@@ -83,22 +83,19 @@ begin
  Try
  MainForm.MyImage.Width := Cols;
  MainForm.MyImage.Height := Rows;
- MainForm.ilBitMaps.Masked := False;
  MyMap := TBitmap.Create;
   MyMap.Canvas.Brush.Style := bsSolid;
-
+ MainForm.MyImage.Picture.Assign(MyMap);
  MyMap.SetSize(Cols, Rows);
  MyMap.PixelFormat := pf8bit;
- MainForm.MyImage.Picture.Bitmap.Assign(MyMap);
    for Y := 0 to Rows - 1 do
      for X := 0 to Cols - 1 do
       begin
-//          Mainform.MyImage.Canvas.Brush.Color := LightMatrix[Y, X].Brush.Color;
+          Mainform.MyImage.Canvas.Brush.Color := LightMatrix[Y, X].Brush.Color;
           MainForm.MyImage.Canvas.MoveTo(X, Y);
-          MainForm.MyImage.Canvas.Pixels[X, Y] := LightMatrix[X, Y].Brush.Color;
+          MainForm.MyImage.Canvas.LineTo(X, Y);
       end;
-//    MainForm.MyImage.Picture.Assign(MyMap);
-   Main.MainForm.ilBitMaps.Insert(Frame, MainForm.MyImage.Picture.Bitmap, nil);
+   Main.MainForm.ilBitMaps.Insert(Frame, MyMap, nil);
  finally
     MyMap.Free;
  end;
@@ -186,6 +183,7 @@ end;
 procedure PlaySequence;
 var
   x, y, Z: integer;
+  MyImage: TImage;
   MyMap: TBitMap;
 begin
 
@@ -201,32 +199,21 @@ begin
 
 
 // Create a TImage on the screen of the appropriate size
-  with MainForm.MyImage do
-    begin
-      Width := Cols * 8;
-      Height := Rows * 8;
-      Stretch := True;
-    end;
+    MyImage.Width := Rows * 8;
+    MyImage.Height := Cols * 8;
+    MyImage.Stretch := True;
     try
 // Create a bitmap to fill the image
     MyMap := TBitMap.Create;
-    MainForm.MyImage.Picture.Assign(MyMap);
-    MainForm.MyImage.Visible := True;
+    MyImage.Picture.Assign(MyMap);
 
-        MyMap.SetSize(MainForm.MyImage.Width, MainForm.MyImage.Height);
+        MyMap.SetSize(MyImage.Width, MyImage.Height);
 // stretch copy from ilBitmaps to the display bitmap.
         for Z := 0 to LastFrame do
-          begin
-
-          MainForm.ilBitMaps.GetBitmap(z, MyMap);
-          MainForm.MyImage.Picture.Assign(MyMap);
-          MainForm.MyImage.Refresh;
-          // MainForm.ilBitMaps.GetBitmap(z, MainForm.MyImage.Picture.Bitmap );
-          end;
+          MainForm.ilBitMaps.GetBitmap(z, MyImage.Picture.Bitmap );
       finally
         MyMap.Free;
       end;
-      //MainForm.MyImage.Visible := False;
 
 end;
 

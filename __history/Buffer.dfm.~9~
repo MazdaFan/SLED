@@ -34,49 +34,42 @@ object BufferForm: TBufferForm
     Top = 0
     Width = 25
     Height = 25
-    OnMouseDown = Shape1MouseDown
   end
   object Shape3: TShape
     Left = 62
     Top = 0
     Width = 25
     Height = 25
-    OnMouseDown = Shape1MouseDown
   end
   object Shape4: TShape
     Left = 93
     Top = 0
     Width = 25
     Height = 25
-    OnMouseDown = Shape1MouseDown
   end
   object Shape5: TShape
     Left = 124
     Top = 0
     Width = 25
     Height = 25
-    OnMouseDown = Shape1MouseDown
   end
   object Shape6: TShape
     Left = 155
     Top = 0
     Width = 25
     Height = 25
-    OnMouseDown = Shape1MouseDown
   end
   object Shape7: TShape
     Left = 186
     Top = 0
     Width = 25
     Height = 25
-    OnMouseDown = Shape1MouseDown
   end
   object Shape8: TShape
     Left = 217
     Top = 0
     Width = 25
     Height = 25
-    OnMouseDown = Shape1MouseDown
   end
   object ColorDialog1: TColorDialog
     Left = 392
