@@ -172,11 +172,9 @@ begin
           LightMatrix[Y, X].OnMouseDown := EVHandler.MouseDown;
           LightMatrix[Y, X].Parent := MainForm;
       end;
-    SeqMap.Width := Cols;
-    SeqMap.Height := Rows;
+    SeqMap.SetSize(Cols, Rows);
     SeqMap.PixelFormat := pf24bit;
-    BufMap.Width := Cols;
-    BufMap.Height := Rows;
+    BufMap.SetSize(Cols, Rows);
     SeqMap.PixelFormat := pf24bit;
 end;
 

@@ -25,7 +25,7 @@ unit SEQUENCE;
 }
 interface
 
-uses  Windows, Graphics, SysUtils;
+uses  SysUtils, Graphics, ExtCtrls, StdCtrls;
 
   procedure CreateTrack;
   procedure CaptureFrame;
@@ -37,18 +37,13 @@ uses  Windows, Graphics, SysUtils;
 
 implementation
 
-uses MAIN, MATRIX, Playback;
+uses MAIN, MATRIX;
 
 procedure CreateTrack;
-var
-  X: integer;
 begin
   // set the initial length of our sequence to 100 frames
   CurrentBuffer := AddFrames;
   SetLength(SASequence, Rows, Cols, CurrentBuffer);
-  SetLength(BitList, CurrentBuffer);
-  for x := 0 to CurrentBuffer - 1 do BitList[X] := TBitmap.Create;   // Creates blank bitmaps to fill the array
-
   Frame := 0;
 end;
 
@@ -77,15 +72,37 @@ procedure CaptureFrame;
 var
   X: Integer;
   Y: Integer;
+  MyMap: TBitMap;
 begin
+  // REWORK
   for Y := 0 to Rows -1 do
     for X := 0 to Cols - 1 do
-      begin
         SASequence[Y, X, Frame] := LightMatrix[Y, X].Brush.Color;
-        SeqMap.Canvas.Pixels[X, Y] := LightMatrix[Y, X].Brush.Color;
-      end;
 
-  BitList[Frame].Assign(SeqMap);        // Stores the sequence bitmap to the bitmap array
+ // Create a bitmap in memory and transfer LightMatrix over to it
+ Try
+ MainForm.MyImage.Width := Cols;
+ MainForm.MyImage.Height := Rows;
+ MainForm.ilBitMaps.Masked := False;
+ MyMap := TBitmap.Create;
+  MyMap.Canvas.Brush.Style := bsSolid;
+
+ MyMap.SetSize(Cols, Rows);
+ MyMap.PixelFormat := pf8bit;
+ MainForm.MyImage.Picture.Bitmap.Assign(MyMap);
+   for Y := 0 to Rows - 1 do
+     for X := 0 to Cols - 1 do
+      begin
+//          Mainform.MyImage.Canvas.Brush.Color := LightMatrix[Y, X].Brush.Color;
+          MainForm.MyImage.Canvas.MoveTo(X, Y);
+          MainForm.MyImage.Canvas.Pixels[X, Y] := LightMatrix[X, Y].Brush.Color;
+      end;
+//    MainForm.MyImage.Picture.Assign(MyMap);
+   Main.MainForm.ilBitMaps.Insert(Frame, MainForm.MyImage.Picture.Bitmap, nil);
+ finally
+    MyMap.Free;
+ end;
+
   Frame := Frame + 1;
   if Frame > LastFrame then LastFrame := LastFrame + 1;  // This should allow us to step through without changing
                                                          // our end marker
@@ -94,9 +111,6 @@ begin
 
   if Frame = CurrentBuffer then    // Hit the end of our buffer
     begin
-      SetLength(BitList, (CurrentBuffer + AddFrames));
-      for X := CurrentBuffer to (CurrentBuffer + AddFrames) do BitList[X] := TBitmap.Create;  // add more bitmaps
-
       CurrentBuffer := CurrentBuffer + AddFrames;
       SetLength(SASequence, Rows, Cols, CurrentBuffer);   // Add more buffer
     end;
@@ -131,7 +145,6 @@ begin
           LightMatrix[Y, X].Brush.Color := SASequence[Y, X, Frame];
           MainForm.Label2.Caption := IntToStr(Frame);
           LightMatrix[Y, X].Repaint;
-          SeqMap.Assign(BitList[Frame]);
         end;
     end;
 
@@ -160,7 +173,6 @@ begin
           MainForm.Label2.Caption := IntToStr(Frame);
           LightMatrix[Y, X].Repaint;
         end;
-      SeqMap.Assign(BitList[Frame]);
     end;
 end;
 
@@ -171,26 +183,50 @@ end;
   the color from the sequence array and places it into each shape.  It uses the FRAME
   variable to keep track of where we are in the array for "time".
 }
-
 procedure PlaySequence;
 var
-  R1: TRect;
-  X: Integer;
-  StartTime: LongInt;
+  x, y, Z: integer;
+  MyMap: TBitMap;
 begin
-  fmPlayBack.Visible := True;
-  R1.Left := 0;
-  R1.Top := 0;
-  R1.Right := fmPlayBack.ClientWidth;
-  R1.Bottom := fmPlayBack.ClientHeight;
-  for X := 0 to LastFrame do
+
+//  for Z := 0 to LastFrame do       // Time in frames
+//    begin
+//    for y := 0 to Rows - 1 do
+//      for x := 0 to Cols - 1 do
+//        begin
+//          LightMatrix[Y, X].Brush.Color := SASequence[y, x, z];
+//          LightMatrix[Y, X].Repaint;
+//      end;
+//    end;
+
+
+// Create a TImage on the screen of the appropriate size
+  with MainForm.MyImage do
     begin
-      StartTime := GetTickCount;
-      fmPlayback.Canvas.StretchDraw(R1, BitList[X]);
-      fmPlayBack.Repaint;
-      if GetTickCount-StartTime < TimeHack then sleep(TimeHack - (GetTickCount-StartTime));
-      MainForm.CheckMessages;
+      Width := Cols * 8;
+      Height := Rows * 8;
+      Stretch := True;
     end;
+    try
+// Create a bitmap to fill the image
+    MyMap := TBitMap.Create;
+    MainForm.MyImage.Picture.Assign(MyMap);
+    MainForm.MyImage.Visible := True;
+
+        MyMap.SetSize(MainForm.MyImage.Width, MainForm.MyImage.Height);
+// stretch copy from ilBitmaps to the display bitmap.
+        for Z := 0 to LastFrame do
+          begin
+
+          MainForm.ilBitMaps.GetBitmap(z, MyMap);
+          MainForm.MyImage.Picture.Assign(MyMap);
+          MainForm.MyImage.Refresh;
+          // MainForm.ilBitMaps.GetBitmap(z, MainForm.MyImage.Picture.Bitmap );
+          end;
+      finally
+        MyMap.Free;
+      end;
+      //MainForm.MyImage.Visible := False;
 
 end;
 

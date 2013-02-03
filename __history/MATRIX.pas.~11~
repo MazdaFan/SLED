@@ -67,9 +67,6 @@ begin
                   LightMatrix[Y, X] := nil;
               end;
          end;
-      if Length(BitList)>0 then
-        for X := 0 to Length(BitList) - 1 do BitList[X].Free;
-
 end;
 
 
@@ -151,6 +148,7 @@ procedure FillLightMatrix;
 var
   Y: Integer;
   X: Integer;
+  ArraySize: integer;
 begin
   //  Get rid of the old tshapes
   FreeLightMatrix;
@@ -172,12 +170,7 @@ begin
           LightMatrix[Y, X].OnMouseDown := EVHandler.MouseDown;
           LightMatrix[Y, X].Parent := MainForm;
       end;
-    SeqMap.Width := Cols;
-    SeqMap.Height := Rows;
-    SeqMap.PixelFormat := pf24bit;
-    BufMap.Width := Cols;
-    BufMap.Height := Rows;
-    SeqMap.PixelFormat := pf24bit;
+    ArraySize := SizeOf(LightMatrix);
 end;
 
 

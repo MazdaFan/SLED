@@ -25,7 +25,7 @@ unit SEQUENCE;
 }
 interface
 
-uses  Windows, Graphics, SysUtils;
+uses  SysUtils, Graphics, ExtCtrls, StdCtrls;
 
   procedure CreateTrack;
   procedure CaptureFrame;
@@ -37,7 +37,7 @@ uses  Windows, Graphics, SysUtils;
 
 implementation
 
-uses MAIN, MATRIX, Playback;
+uses MAIN, MATRIX;
 
 procedure CreateTrack;
 var
@@ -78,13 +78,13 @@ var
   X: Integer;
   Y: Integer;
 begin
+  // REWORK
   for Y := 0 to Rows -1 do
     for X := 0 to Cols - 1 do
       begin
         SASequence[Y, X, Frame] := LightMatrix[Y, X].Brush.Color;
-        SeqMap.Canvas.Pixels[X, Y] := LightMatrix[Y, X].Brush.Color;
+        SeqMap.Canvas.Pixels[X, Y] := LightMatrix[X, Y].Brush.Color;    // copies the matrix to the sequence bitmap
       end;
-
   BitList[Frame].Assign(SeqMap);        // Stores the sequence bitmap to the bitmap array
   Frame := Frame + 1;
   if Frame > LastFrame then LastFrame := LastFrame + 1;  // This should allow us to step through without changing
@@ -99,6 +99,7 @@ begin
 
       CurrentBuffer := CurrentBuffer + AddFrames;
       SetLength(SASequence, Rows, Cols, CurrentBuffer);   // Add more buffer
+
     end;
 
 end;
@@ -171,27 +172,51 @@ end;
   the color from the sequence array and places it into each shape.  It uses the FRAME
   variable to keep track of where we are in the array for "time".
 }
-
 procedure PlaySequence;
-var
-  R1: TRect;
-  X: Integer;
-  StartTime: LongInt;
+//var
+//  x, y, Z: integer;
+//  MyMap: TBitMap;
 begin
-  fmPlayBack.Visible := True;
-  R1.Left := 0;
-  R1.Top := 0;
-  R1.Right := fmPlayBack.ClientWidth;
-  R1.Bottom := fmPlayBack.ClientHeight;
-  for X := 0 to LastFrame do
-    begin
-      StartTime := GetTickCount;
-      fmPlayback.Canvas.StretchDraw(R1, BitList[X]);
-      fmPlayBack.Repaint;
-      if GetTickCount-StartTime < TimeHack then sleep(TimeHack - (GetTickCount-StartTime));
-      MainForm.CheckMessages;
-    end;
 
+//  for Z := 0 to LastFrame do       // Time in frames
+//    begin
+//    for y := 0 to Rows - 1 do
+//      for x := 0 to Cols - 1 do
+//        begin
+//          LightMatrix[Y, X].Brush.Color := SASequence[y, x, z];
+//          LightMatrix[Y, X].Repaint;
+//      end;
+//    end;
+
+
+// Create a TImage on the screen of the appropriate size
+//  with MainForm.MyImage do
+//    begin
+//      Width := Cols * 8;
+//      Height := Rows * 8;
+//      Stretch := True;
+//    end;
+//    try
+//// Create a bitmap to fill the image
+//    MyMap := TBitMap.Create;
+//    MainForm.MyImage.Picture.Assign(MyMap);
+//    MainForm.MyImage.Visible := True;
+//
+//        MyMap.SetSize(MainForm.MyImage.Width, MainForm.MyImage.Height);
+//// stretch copy from ilBitmaps to the display bitmap.
+//        for Z := 0 to LastFrame do
+//          begin
+//
+//          MainForm.ilBitMaps.GetBitmap(z, MyMap);
+//          MainForm.MyImage.Picture.Assign(MyMap);
+//          MainForm.MyImage.Refresh;
+//          // MainForm.ilBitMaps.GetBitmap(z, MainForm.MyImage.Picture.Bitmap );
+//          end;
+//      finally
+//        MyMap.Free;
+//      end;
+//      //MainForm.MyImage.Visible := False;
+//
 end;
 
 procedure DeleteFrame;

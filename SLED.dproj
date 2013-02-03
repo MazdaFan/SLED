@@ -61,6 +61,9 @@
 			</DCCReference>
 			<DCCReference Include="EXPORT_LOR.pas"/>
 			<DCCReference Include="EXPORT_VIXEN.pas"/>
+			<DCCReference Include="PlayBack.pas">
+				<Form>fmPlayBack</Form>
+			</DCCReference>
 			<None Include="ModelSupport_SLED\default.txaPackage"/>
 			<None Include="ModelSupport_SLED\default.txvpck"/>
 			<None Include="ModelSupport_SLED\ABOUT\default.txvpck"/>

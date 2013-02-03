@@ -64,7 +64,7 @@ var
 
 implementation
 
-uses MAIN, Matrix, Sequence, Buffer, Playback;
+uses MAIN, Matrix, Sequence, Buffer;
 
 {$R *.dfm}
 
@@ -94,10 +94,6 @@ begin
   SetupForm.Visible := False;
   if CustomTime then TimeHack := Trunc((StrToFloat(Edit1.Text)*100));
   MainForm.Timer1.Interval := TimeHack * 10;
-  fmPlayBack.ClientWidth := Cols * 10;
-  fmPlayBack.ClientHeight := Rows * 10;
-  fmPlayBack.Canvas.FloodFill(10,10,clBlack, fsSurface );
-  fmPlayBack.Repaint;
 end;
 
 procedure TSetupForm.RadioGroup1Click(Sender: TObject);

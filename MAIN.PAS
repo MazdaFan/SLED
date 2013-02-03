@@ -101,9 +101,7 @@ type
     ToolButton5: TToolButton;
     ToolButton6: TToolButton;
     ActionList1: TActionList;
-    ilBitMaps: TImageList;
     ColorDialog1: TColorDialog;
-    MyImage: TImage;
     procedure FileExit1Execute(Sender: TObject);
     procedure HelpAbout1Execute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -125,6 +123,7 @@ type
     procedure Button1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure Audio1Click(Sender: TObject);
+    procedure CheckMessages;
 
 
 
@@ -151,16 +150,22 @@ var
   TimeHack: integer;                        // Number of 1/100th of a seconds per frame of animation
   IsLRL: Boolean;
   IsDUD: Boolean;
-
+  BufMap, SeqMap: TBitmap;
+  BitList: array of TBitMap;
 const
   AddFrames = 100;                          // How many "frames" we add to the current buffer: AddFrames*TimeHack div 100 = seconds
 
 implementation
 
-uses about, setup, MATRIX, SEQUENCE, File_IO, Buffer, EXPORT_LOR, EXPORT_VIXEN;
+uses about, setup, MATRIX, SEQUENCE, File_IO, Buffer, EXPORT_LOR, EXPORT_VIXEN,
+  PlayBack;
 
 {$R *.dfm}
 
+procedure TMainForm.CheckMessages;
+begin
+  application.ProcessMessages;
+end;
 
 procedure TMainForm.Play1Click(Sender: TObject);
 begin
@@ -194,6 +199,8 @@ begin
   // As the form closes, we need to free up the memory from our array of lights
   FreeLightMatrix;
   FreeBufferMatrix;
+  SeqMap.Free;
+  BufMap.Free;
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -204,6 +211,8 @@ begin
   TimeHack := 50;    // default to catch files that do not have a timehack assigned.
   // Set up our dynamic array with a length of 0
   SetLength(LightMatrix,0, 0);
+  SeqMap := TBitMap.Create;
+  BufMap := TBitMap.Create;
 end;
 
 procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
